@@ -28,26 +28,26 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.imageViewer1 = new NationalInstruments.Vision.WindowsForms.ImageViewer();
+            this.imageViewer = new NationalInstruments.Vision.WindowsForms.ImageViewer();
             this.label1 = new System.Windows.Forms.Label();
             this.interfaceTextBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.numImages = new System.Windows.Forms.NumericUpDown();
             this.startButton = new System.Windows.Forms.Button();
             this.stopButton = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.bufNumTextBox = new System.Windows.Forms.TextBox();
             this.quitButton = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numImages)).BeginInit();
             this.SuspendLayout();
             // 
-            // imageViewer1
+            // imageViewer
             // 
-            this.imageViewer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.imageViewer1.Location = new System.Drawing.Point(12, 12);
-            this.imageViewer1.Name = "imageViewer1";
-            this.imageViewer1.Size = new System.Drawing.Size(640, 480);
-            this.imageViewer1.TabIndex = 0;
+            this.imageViewer.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.imageViewer.Location = new System.Drawing.Point(12, 12);
+            this.imageViewer.Name = "imageViewer";
+            this.imageViewer.Size = new System.Drawing.Size(640, 480);
+            this.imageViewer.TabIndex = 0;
             // 
             // label1
             // 
@@ -75,13 +75,13 @@
             this.label2.TabIndex = 3;
             this.label2.Text = "# of Images";
             // 
-            // numericUpDown1
+            // numImages
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(115, 516);
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(70, 20);
-            this.numericUpDown1.TabIndex = 4;
-            this.numericUpDown1.Value = new decimal(new int[] {
+            this.numImages.Location = new System.Drawing.Point(115, 516);
+            this.numImages.Name = "numImages";
+            this.numImages.Size = new System.Drawing.Size(70, 20);
+            this.numImages.TabIndex = 4;
+            this.numImages.Value = new decimal(new int[] {
             5,
             0,
             0,
@@ -95,6 +95,7 @@
             this.startButton.TabIndex = 5;
             this.startButton.Text = "Start";
             this.startButton.UseVisualStyleBackColor = true;
+            this.startButton.Click += new System.EventHandler(this.startButton_Click);
             // 
             // stopButton
             // 
@@ -104,6 +105,7 @@
             this.stopButton.TabIndex = 6;
             this.stopButton.Text = "Stop";
             this.stopButton.UseVisualStyleBackColor = true;
+            this.stopButton.Click += new System.EventHandler(this.stopButton_Click);
             // 
             // label3
             // 
@@ -129,6 +131,7 @@
             this.quitButton.TabIndex = 9;
             this.quitButton.Text = "Quit";
             this.quitButton.UseVisualStyleBackColor = true;
+            this.quitButton.Click += new System.EventHandler(this.quitButton_Click);
             // 
             // Form1
             // 
@@ -140,14 +143,14 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.stopButton);
             this.Controls.Add(this.startButton);
-            this.Controls.Add(this.numericUpDown1);
+            this.Controls.Add(this.numImages);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.interfaceTextBox);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.imageViewer1);
+            this.Controls.Add(this.imageViewer);
             this.Name = "Form1";
             this.Text = "Form1";
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numImages)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -155,11 +158,11 @@
 
         #endregion
 
-        private NationalInstruments.Vision.WindowsForms.ImageViewer imageViewer1;
+        private NationalInstruments.Vision.WindowsForms.ImageViewer imageViewer;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox interfaceTextBox;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.NumericUpDown numImages;
         private System.Windows.Forms.Button startButton;
         private System.Windows.Forms.Button stopButton;
         private System.Windows.Forms.Label label3;
