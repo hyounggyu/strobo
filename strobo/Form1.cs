@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using NationalInstruments.Vision;
 using NationalInstruments.Vision.Acquisition.Imaq;
+using NetMQ;
 
 namespace strobo
 {
@@ -17,6 +18,10 @@ namespace strobo
         private ImaqBufferCollection bufList;
         private VisionImage displayImage;
         private System.ComponentModel.BackgroundWorker acquisitionWorker;
+
+        // NetMQ
+        private NetMQContext context;
+        private NetMQSocket publisher;
 
         private struct UIUpdateArgs
         {
@@ -50,6 +55,11 @@ namespace strobo
 
         private void startButton_Click(object sender, EventArgs e)
         {
+            // NetMQ
+            context = NetMQContext.Create();
+            publisher = context.CreatePublisherSocket();
+            publisher.Bind("tcp://*:5563");
+
             try
             {
                 //  Update the UI.
@@ -74,7 +84,7 @@ namespace strobo
                 _session.Acquisition.Configure(bufList);
                 _session.Acquisition.AcquireAsync();
                 //  Start the background worker thread.
-                acquisitionWorker.RunWorkerAsync();
+                acquisitionWorker.RunWorkerAsync(subCheckBox);
             }
             catch (ImaqException ex)
             {
@@ -92,9 +102,15 @@ namespace strobo
             BackgroundWorker worker = (BackgroundWorker)sender;
             try
             {
+                PixelValue2D subPixels = new PixelValue2D(new byte[480, 640]);
+                int tmp;
                 uint bufferNumber = 0;
                 string pixelValue = "";
                 ImageType imageType = (ImageType)_session.Attributes[ImaqStandardAttribute.ImageType].GetValue();
+
+                PixelValue2D prePixels = _session.Acquisition.Extract(bufferNumber, out bufferNumber).ToPixelArray();
+                bufferNumber++;
+
                 //  Loop until we tell the thread to cancel or we get an error.  When this
                 //  function completes the acquisitionWorker_RunWorkerCompleted method will
                 //  be called.
@@ -104,8 +120,26 @@ namespace strobo
                     //  Extracting an image is a 0-copy operation, and we need to copy the
                     //  image here for display purposes only.  You can perform image processing
                     //  on the extractedImage without having to copy it.
-                    PixelValue2D extractedPixels = _session.Acquisition.Extract(bufferNumber, out bufferNumber).ToPixelArray();
-                    imageViewer.Image.ArrayToImage(extractedPixels);
+                    PixelValue2D curPixels = _session.Acquisition.Extract(bufferNumber, out bufferNumber).ToPixelArray();
+                    for (int x=0; x < 640; x++)
+                    {
+                        for (int y=0; y < 480; y++)
+                        {
+                            tmp = (int)curPixels.U8[y,x] - (int)prePixels.U8[y,x];
+                            tmp = tmp * tmp;
+                            subPixels.U8[y, x] = (byte)(tmp > 255 ? 255 : tmp);
+                        }
+                    }
+                    prePixels = curPixels;
+                    if (((CheckBox)e.Argument).Checked)
+                    {
+                        imageViewer.Image.ArrayToImage(subPixels);
+                    }
+                    else
+                    {
+                        imageViewer.Image.ArrayToImage(curPixels);
+                    }
+                    /*
                     switch (imageType)
                     {
                         case ImageType.U8:
@@ -121,6 +155,12 @@ namespace strobo
                             pixelValue = "N/A";
                             break;
                     }
+                    */
+                    // Send image
+                    // byte[,] 타입을 byte[]로 변경 -> 이거 안 해도 되어야함.
+                    byte[] dest = new byte[subPixels.U8.Length];
+                    Buffer.BlockCopy(subPixels.U8, 0, dest, 0, subPixels.U8.Length);
+                    publisher.Send(dest);
                     //  Update the UI by calling ReportProgress on the background worker.
                     //  This will call the acquisition_ProgressChanged method in the UI
                     //  thread, where it is safe to update UI elements.  Do not update UI
@@ -193,6 +233,9 @@ namespace strobo
                 _session.Close();
                 _session = null;
             }
+            // NetMQ
+            publisher.Close();
+            context.Dispose();
             //  Update the UI.
             startButton.Enabled = true;
             stopButton.Enabled = false;
