@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using NationalInstruments.Vision;
 using NationalInstruments.Vision.Acquisition.Imaq;
+using NationalInstruments.DAQmx;
 using NetMQ;
 
 namespace strobo
@@ -18,7 +19,16 @@ namespace strobo
         private ImaqBufferCollection bufList;
         private VisionImage displayImage;
         private System.ComponentModel.BackgroundWorker acquisitionWorker;
+        
+        private AnalogMultiChannelReader analogInReader;
+        private Task myTask;
 
+        private string physicalChannelText;
+        private double minimumValue;
+        private double maximumValue;
+        private double rateValue;
+        private int    samplesPerChannelValue;
+        
         // NetMQ
         private NetMQContext context;
         private NetMQSocket publisher;
@@ -26,12 +36,12 @@ namespace strobo
         private struct UIUpdateArgs
         {
             public uint bufferNumber;
-            public string pixelValue;
+            public double voltageValue;
 
-            public UIUpdateArgs(uint _bufferNumber, string _pixelValue)
+            public UIUpdateArgs(uint _bufferNumber, double _voltageValue)
             {
                 bufferNumber = _bufferNumber;
-                pixelValue = _pixelValue;
+                voltageValue = _voltageValue;
             }
         }
 
@@ -67,11 +77,34 @@ namespace strobo
                 stopButton.Enabled = true;
                 bufNumTextBox.Text = "";
                 //pixelValTextBox.Text = "";
+                
+                //// DAQmx START
+                // Create a new task
+                myTask = new Task();
+                physicalChannelText = "Dev1/ai0";
+                minimumValue = -10.00;
+                maximumValue = 10.00;
+                rateValue = 10000.00;
+                samplesPerChannelValue = 1000;
+                
+                // Create a virtual channel
+                myTask.AIChannels.CreateVoltageChannel(physicalChannelText, "",
+                    (AITerminalConfiguration)(-1), Convert.ToDouble(minimumValue),
+                    Convert.ToDouble(maximumValue), AIVoltageUnits.Volts);
+
+                analogInReader = new AnalogMultiChannelReader(myTask.Stream);
+
+                // Verify the Task
+                myTask.Control(TaskAction.Verify);
+                //// DAQmx END
+
                 //  Create a session.
                 _session = new ImaqSession(interfaceTextBox.Text);
+
                 //  Configure the image viewer.
                 displayImage = new VisionImage((ImageType)_session.Attributes[ImaqStandardAttribute.ImageType].GetValue());
                 imageViewer.Attach(displayImage);
+
                 //  Create a buffer collection for the acquisition with the requested
                 //  number of images, and configure the buffers to loop continuously.
                 int numberOfImages = (int)numImages.Value;
@@ -80,9 +113,11 @@ namespace strobo
                 {
                     bufList[i].Command = (i == bufList.Count - 1) ? ImaqBufferCommand.Loop : ImaqBufferCommand.Next;
                 }
+
                 //  Configure and start the acquisition.
                 _session.Acquisition.Configure(bufList);
                 _session.Acquisition.AcquireAsync();
+
                 //  Start the background worker thread.
                 acquisitionWorker.RunWorkerAsync(subCheckBox);
             }
@@ -111,6 +146,10 @@ namespace strobo
                 PixelValue2D prePixels = _session.Acquisition.Extract(bufferNumber, out bufferNumber).ToPixelArray();
                 bufferNumber++;
 
+                //// DAQmx START
+                double[] data;
+                //// DAQmx END
+
                 //  Loop until we tell the thread to cancel or we get an error.  When this
                 //  function completes the acquisitionWorker_RunWorkerCompleted method will
                 //  be called.
@@ -121,7 +160,12 @@ namespace strobo
                     //  image here for display purposes only.  You can perform image processing
                     //  on the extractedImage without having to copy it.
                     PixelValue2D curPixels = _session.Acquisition.Extract(bufferNumber, out bufferNumber).ToPixelArray();
-                    for (int x=0; x < 640; x++)
+
+                    //// DAQmx START
+                    data = analogInReader.ReadSingleSample();
+                    //// DAQmx END
+
+                    for (int x = 0; x < 640; x++)
                     {
                         for (int y=0; y < 480; y++)
                         {
@@ -166,7 +210,7 @@ namespace strobo
                     //  thread, where it is safe to update UI elements.  Do not update UI
                     //  elements directly in this thread as doing so could result in a
                     //  deadlock.
-                    worker.ReportProgress(0, new UIUpdateArgs(bufferNumber, pixelValue));
+                    worker.ReportProgress(0, new UIUpdateArgs(bufferNumber, data[0]));
                     bufferNumber++;
                 }
             }
@@ -185,7 +229,7 @@ namespace strobo
             //  Update the UI with the information passed from the background worker thread.
             UIUpdateArgs updateArgs = (UIUpdateArgs)e.UserState;
             bufNumTextBox.Text = updateArgs.bufferNumber.ToString();
-            //pixelValTextBox.Text = updateArgs.pixelValue;
+            voltageValTextBox.Text = updateArgs.voltageValue.ToString();
         }
 
         void acquisitionWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

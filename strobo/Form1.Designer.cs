@@ -39,6 +39,8 @@
             this.bufNumTextBox = new System.Windows.Forms.TextBox();
             this.quitButton = new System.Windows.Forms.Button();
             this.subCheckBox = new System.Windows.Forms.CheckBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.voltageValTextBox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.numImages)).BeginInit();
             this.SuspendLayout();
             // 
@@ -144,11 +146,29 @@
             this.subCheckBox.Text = "Sub Image";
             this.subCheckBox.UseVisualStyleBackColor = true;
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(334, 546);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(47, 12);
+            this.label4.TabIndex = 11;
+            this.label4.Text = "Voltage";
+            // 
+            // voltageValTextBox
+            // 
+            this.voltageValTextBox.Location = new System.Drawing.Point(334, 561);
+            this.voltageValTextBox.Name = "voltageValTextBox";
+            this.voltageValTextBox.Size = new System.Drawing.Size(116, 21);
+            this.voltageValTextBox.TabIndex = 12;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(667, 566);
+            this.ClientSize = new System.Drawing.Size(667, 594);
+            this.Controls.Add(this.voltageValTextBox);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.subCheckBox);
             this.Controls.Add(this.quitButton);
             this.Controls.Add(this.bufNumTextBox);
@@ -181,6 +201,8 @@
         private System.Windows.Forms.TextBox bufNumTextBox;
         private System.Windows.Forms.Button quitButton;
         private System.Windows.Forms.CheckBox subCheckBox;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox voltageValTextBox;
     }
 }
 
