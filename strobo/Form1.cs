@@ -1,4 +1,7 @@
-﻿using System;
+﻿//#define VOLTAGE
+
+using System;
+using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -10,6 +13,7 @@ using NationalInstruments.Vision;
 using NationalInstruments.Vision.Acquisition.Imaq;
 using NationalInstruments.DAQmx;
 using NetMQ;
+
 
 namespace strobo
 {
@@ -28,7 +32,9 @@ namespace strobo
         private double maximumValue;
         private double rateValue;
         private int    samplesPerChannelValue;
-        
+
+        private StreamWriter sw;
+
         // NetMQ
         private NetMQContext context;
         private NetMQSocket publisher;
@@ -65,6 +71,8 @@ namespace strobo
 
         private void startButton_Click(object sender, EventArgs e)
         {
+            sw = new StreamWriter( new FileStream("output.dat", FileMode.Create) );
+
             // NetMQ
             context = NetMQContext.Create();
             publisher = context.CreatePublisherSocket();
@@ -135,19 +143,25 @@ namespace strobo
             //  Perform image processing here instead of the UI thread to avoid a
             //  sluggish or unresponsive UI.
             BackgroundWorker worker = (BackgroundWorker)sender;
+            bool flagSendMore = false;
+            byte[] zero = new byte[] { 0 };
             try
             {
                 PixelValue2D subPixels = new PixelValue2D(new byte[480, 640]);
+                uint imgnum = 0;
                 int tmp;
-                uint bufferNumber = 0;
+                uint bufferNumber = 0, outbufferNumber;
                 string pixelValue = "";
                 ImageType imageType = (ImageType)_session.Attributes[ImaqStandardAttribute.ImageType].GetValue();
 
                 PixelValue2D prePixels = _session.Acquisition.Extract(bufferNumber, out bufferNumber).ToPixelArray();
                 bufferNumber++;
+                //// DAQmx START
+                double preVoltage = analogInReader.ReadSingleSample()[0];
+                //// DAQmx END
 
                 //// DAQmx START
-                double[] data;
+                double curVoltage;
                 //// DAQmx END
 
                 //  Loop until we tell the thread to cancel or we get an error.  When this
@@ -159,10 +173,10 @@ namespace strobo
                     //  Extracting an image is a 0-copy operation, and we need to copy the
                     //  image here for display purposes only.  You can perform image processing
                     //  on the extractedImage without having to copy it.
-                    PixelValue2D curPixels = _session.Acquisition.Extract(bufferNumber, out bufferNumber).ToPixelArray();
+                    PixelValue2D curPixels = _session.Acquisition.Extract(bufferNumber, out outbufferNumber).ToPixelArray();
 
                     //// DAQmx START
-                    data = analogInReader.ReadSingleSample();
+                    curVoltage = analogInReader.ReadSingleSample()[0];
                     //// DAQmx END
 
                     for (int x = 0; x < 640; x++)
@@ -183,34 +197,47 @@ namespace strobo
                     {
                         imageViewer.Image.ArrayToImage(curPixels);
                     }
-                    /*
-                    switch (imageType)
-                    {
-                        case ImageType.U8:
-                            pixelValue = extractedPixels.U8[0, 0].ToString();
-                            break;
-                        case ImageType.I16:
-                            pixelValue = extractedPixels.I16[0, 0].ToString();
-                            break;
-                        case ImageType.Rgb32:
-                            pixelValue = extractedPixels.Rgb32[0, 0].ToString();
-                            break;
-                        default:
-                            pixelValue = "N/A";
-                            break;
-                    }
-                    */
+                    // Save Acqed bufferNumber
+                    sw.WriteLine("{0} {1}", outbufferNumber, curVoltage);
                     // Send image
                     // byte[,] 타입을 byte[]로 변경 -> 이거 안 해도 되어야함.
                     byte[] dest = new byte[subPixels.U8.Length];
                     Buffer.BlockCopy(subPixels.U8, 0, dest, 0, subPixels.U8.Length);
-                    publisher.Send(dest);
+                    //publisher.Send(dest);
+                    //double dvolt = (volt[voltIndex + 1] - volt[voltIndex - 1]) / 2.0;
+                    double dvolt = curVoltage - preVoltage;
+                    ////// 여기!!!! 속도!!!
+#if VOLTAGE
+                    if (dvolt > 0.02)
+                    {
+                        publisher.SendMore(dest);
+                        flagSendMore = true;
+                    }
+                    else if (flagSendMore)
+                    {
+                        publisher.Send(zero);
+
+                        // finish
+                        flagSendMore = false;
+                    }
+#else
+                    if (imgnum % 50  == 0)
+                    {
+                        publisher.Send(zero);
+                    }
+                    else
+                    {
+                        publisher.SendMore(dest);
+                    }
+                    imgnum++;
+#endif
+                    preVoltage = curVoltage;
                     //  Update the UI by calling ReportProgress on the background worker.
                     //  This will call the acquisition_ProgressChanged method in the UI
                     //  thread, where it is safe to update UI elements.  Do not update UI
                     //  elements directly in this thread as doing so could result in a
                     //  deadlock.
-                    worker.ReportProgress(0, new UIUpdateArgs(bufferNumber, data[0]));
+                    worker.ReportProgress(0, new UIUpdateArgs(outbufferNumber, dvolt));
                     bufferNumber++;
                 }
             }
@@ -229,7 +256,7 @@ namespace strobo
             //  Update the UI with the information passed from the background worker thread.
             UIUpdateArgs updateArgs = (UIUpdateArgs)e.UserState;
             bufNumTextBox.Text = updateArgs.bufferNumber.ToString();
-            voltageValTextBox.Text = updateArgs.voltageValue.ToString();
+            voltageValTextBox.Text = String.Format("{0,8:0.00000}", updateArgs.voltageValue);
         }
 
         void acquisitionWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -277,6 +304,7 @@ namespace strobo
                 _session.Close();
                 _session = null;
             }
+            sw.Close();
             // NetMQ
             publisher.Close();
             context.Dispose();
