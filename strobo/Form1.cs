@@ -1,4 +1,4 @@
-﻿//#define VOLTAGE
+﻿#define VOLTAGE
 
 using System;
 using System.IO;
