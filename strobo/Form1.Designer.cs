@@ -41,6 +41,12 @@
             this.subCheckBox = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
             this.voltageValTextBox = new System.Windows.Forms.TextBox();
+            this.volumeWidthTextBox = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.volumeHegithTextBox = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.volumeDepthTextBox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.numImages)).BeginInit();
             this.SuspendLayout();
             // 
@@ -92,7 +98,7 @@
             // 
             // startButton
             // 
-            this.startButton.Location = new System.Drawing.Point(234, 504);
+            this.startButton.Location = new System.Drawing.Point(567, 497);
             this.startButton.Name = "startButton";
             this.startButton.Size = new System.Drawing.Size(87, 21);
             this.startButton.TabIndex = 5;
@@ -102,7 +108,7 @@
             // 
             // stopButton
             // 
-            this.stopButton.Location = new System.Drawing.Point(234, 530);
+            this.stopButton.Location = new System.Drawing.Point(567, 523);
             this.stopButton.Name = "stopButton";
             this.stopButton.Size = new System.Drawing.Size(87, 21);
             this.stopButton.TabIndex = 6;
@@ -113,7 +119,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(330, 503);
+            this.label3.Location = new System.Drawing.Point(239, 503);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(134, 12);
             this.label3.TabIndex = 7;
@@ -121,14 +127,14 @@
             // 
             // bufNumTextBox
             // 
-            this.bufNumTextBox.Location = new System.Drawing.Point(334, 518);
+            this.bufNumTextBox.Location = new System.Drawing.Point(243, 518);
             this.bufNumTextBox.Name = "bufNumTextBox";
             this.bufNumTextBox.Size = new System.Drawing.Size(116, 21);
             this.bufNumTextBox.TabIndex = 8;
             // 
             // quitButton
             // 
-            this.quitButton.Location = new System.Drawing.Point(567, 504);
+            this.quitButton.Location = new System.Drawing.Point(567, 546);
             this.quitButton.Name = "quitButton";
             this.quitButton.Size = new System.Drawing.Size(87, 21);
             this.quitButton.TabIndex = 9;
@@ -139,7 +145,7 @@
             // subCheckBox
             // 
             this.subCheckBox.AutoSize = true;
-            this.subCheckBox.Location = new System.Drawing.Point(472, 518);
+            this.subCheckBox.Location = new System.Drawing.Point(391, 504);
             this.subCheckBox.Name = "subCheckBox";
             this.subCheckBox.Size = new System.Drawing.Size(85, 16);
             this.subCheckBox.TabIndex = 10;
@@ -149,7 +155,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(334, 546);
+            this.label4.Location = new System.Drawing.Point(241, 546);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(47, 12);
             this.label4.TabIndex = 11;
@@ -157,16 +163,70 @@
             // 
             // voltageValTextBox
             // 
-            this.voltageValTextBox.Location = new System.Drawing.Point(334, 561);
+            this.voltageValTextBox.Location = new System.Drawing.Point(241, 561);
             this.voltageValTextBox.Name = "voltageValTextBox";
             this.voltageValTextBox.Size = new System.Drawing.Size(116, 21);
             this.voltageValTextBox.TabIndex = 12;
+            // 
+            // volumeWidthTextBox
+            // 
+            this.volumeWidthTextBox.Location = new System.Drawing.Point(122, 607);
+            this.volumeWidthTextBox.Name = "volumeWidthTextBox";
+            this.volumeWidthTextBox.Size = new System.Drawing.Size(116, 21);
+            this.volumeWidthTextBox.TabIndex = 13;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(29, 610);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(82, 12);
+            this.label5.TabIndex = 14;
+            this.label5.Text = "Volume Width";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(29, 637);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(87, 12);
+            this.label6.TabIndex = 16;
+            this.label6.Text = "Volume Height";
+            // 
+            // volumeHegithTextBox
+            // 
+            this.volumeHegithTextBox.Location = new System.Drawing.Point(122, 634);
+            this.volumeHegithTextBox.Name = "volumeHegithTextBox";
+            this.volumeHegithTextBox.Size = new System.Drawing.Size(116, 21);
+            this.volumeHegithTextBox.TabIndex = 15;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(29, 664);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(84, 12);
+            this.label7.TabIndex = 18;
+            this.label7.Text = "Volume Depth";
+            // 
+            // volumeDepthTextBox
+            // 
+            this.volumeDepthTextBox.Location = new System.Drawing.Point(122, 661);
+            this.volumeDepthTextBox.Name = "volumeDepthTextBox";
+            this.volumeDepthTextBox.Size = new System.Drawing.Size(116, 21);
+            this.volumeDepthTextBox.TabIndex = 17;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(667, 594);
+            this.ClientSize = new System.Drawing.Size(667, 737);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.volumeDepthTextBox);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.volumeHegithTextBox);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.volumeWidthTextBox);
             this.Controls.Add(this.voltageValTextBox);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.subCheckBox);
@@ -203,6 +263,12 @@
         private System.Windows.Forms.CheckBox subCheckBox;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox voltageValTextBox;
+        private System.Windows.Forms.TextBox volumeWidthTextBox;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox volumeHegithTextBox;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox volumeDepthTextBox;
     }
 }
 
