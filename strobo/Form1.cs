@@ -1,6 +1,4 @@
-﻿#define RANDOM
-
-using System;
+﻿using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
@@ -220,10 +218,6 @@ namespace strobo
                         flagSendMore = false;
                     }
                     preVoltage = curVoltage;
-#endif
-#if RANDOM
-                    // 여기에 Queue를 넣어야
-
 #endif
                     //  Update the UI by calling ReportProgress on the background worker.
                     //  This will call the acquisition_ProgressChanged method in the UI
