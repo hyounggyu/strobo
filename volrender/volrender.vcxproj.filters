@@ -41,13 +41,15 @@
     <None Include="app.ico">
       <Filter>리소스 파일</Filter>
     </None>
-    <None Include="volrender_kernel.cu">
-      <Filter>소스 파일</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="app.rc">
       <Filter>리소스 파일</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="volrender_kernel.cu">
+      <Filter>소스 파일</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>

@@ -11,11 +11,13 @@ int iDivUp(int a, int b)
     return (a % b != 0) ? (a / b + 1) : (a / b);
 }
 
+
+extern "C" void updateVolume();
+extern "C" void freeCudaBuffers();
+
 /*
 extern "C" void setTextureFilterMode(bool bLinearFilter);
 extern "C" void initCuda(void *h_volume, cudaExtent volumeSize);
-extern "C" void updateVolume();
-extern "C" void freeCudaBuffers();
 extern "C" void render_kernel(dim3 gridSize, dim3 blockSize, uint *d_output, uint imageW, uint imageH,
                               float density, float brightness, float transferOffset, float transferScale);
 extern "C" void copyInvViewMatrix(float *invViewMatrix, size_t sizeofMatrix);
