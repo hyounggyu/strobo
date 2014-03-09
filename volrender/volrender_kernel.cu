@@ -14,13 +14,30 @@
 #ifndef _VOLUMERENDER_KERNEL_CU_
 #define _VOLUMERENDER_KERNEL_CU_
 
+#include <GL/glew.h>
+
 #include <helper_cuda.h>
 #include <helper_math.h>
 
 typedef unsigned int  uint;
 typedef unsigned char uchar;
 
-cudaMemcpy3DParms volumeParams = {0}; 
+uint *h_output;
+uint *d_output;
+uchar *h_volume;
+int imageW, imageH;
+
+dim3 blockSize(16, 16);
+dim3 gridSize;
+float density = 0.05f;
+float brightness = 1.0f;
+float transferOffset = 0.0f;
+float transferScale = 1.0f;
+bool linearFiltering = true;
+float3 viewRotation;
+float3 viewTranslation = make_float3(0.0, 0.0, -4.0f);
+
+cudaMemcpy3DParms copyParams = {0};
 cudaArray *d_volumeArray = 0;
 cudaArray *d_transferFuncArray;
 
@@ -29,6 +46,11 @@ typedef unsigned char VolumeType;
 
 texture<VolumeType, 3, cudaReadModeNormalizedFloat> tex;         // 3D texture
 texture<float4, 1, cudaReadModeElementType>         transferTex; // 1D transfer function texture
+
+int iDivUp(int a, int b)
+{
+    return (a % b != 0) ? (a / b + 1) : (a / b);
+}
 
 typedef struct
 {
@@ -191,11 +213,11 @@ void initCuda(void *h_volume, cudaExtent volumeSize)
     checkCudaErrors(cudaMalloc3DArray(&d_volumeArray, &channelDesc, volumeSize));
 
     // copy data to 3D array
-    volumeParams.srcPtr   = make_cudaPitchedPtr(h_volume, volumeSize.width*sizeof(VolumeType), volumeSize.width, volumeSize.height);
-    volumeParams.dstArray = d_volumeArray;
-    volumeParams.extent   = volumeSize;
-    volumeParams.kind     = cudaMemcpyHostToDevice;
-    checkCudaErrors(cudaMemcpy3D(&volumeParams));
+    copyParams.srcPtr   = make_cudaPitchedPtr(h_volume, volumeSize.width*sizeof(VolumeType), volumeSize.width, volumeSize.height);
+    copyParams.dstArray = d_volumeArray;
+    copyParams.extent   = volumeSize;
+    copyParams.kind     = cudaMemcpyHostToDevice;
+    checkCudaErrors(cudaMemcpy3D(&copyParams));
 
     // set texture parameters
     tex.normalized = true;                      // access with normalized texture coordinates
@@ -238,8 +260,8 @@ void freeCudaBuffers()
 {
     checkCudaErrors(cudaFreeArray(d_volumeArray));
     checkCudaErrors(cudaFreeArray(d_transferFuncArray));
+	checkCudaErrors(cudaFree(d_output));
 }
-
 
 extern "C"
 void render_kernel(dim3 gridSize, dim3 blockSize, uint *d_output, uint imageW, uint imageH,
@@ -256,9 +278,67 @@ void copyInvViewMatrix(float *invViewMatrix, size_t sizeofMatrix)
 }
 
 extern "C"
-void updateVolume()
+void init(uchar *h_vol, int vol_w, int vol_h, int vol_d, uint *h_img, int img_w, int img_h)
 {
-	checkCudaErrors(cudaMemcpy3D(&volumeParams));
+	glewInit();
+
+	h_volume = h_vol;
+	h_output = h_img;
+	imageW = img_w;
+	imageH = img_h;
+	gridSize = dim3(iDivUp(imageW, blockSize.x), iDivUp(imageH, blockSize.y));
+
+	checkCudaErrors(cudaMalloc((void **)&d_output, imageW*imageH*sizeof(uint)));
+
+	initCuda(h_volume, make_cudaExtent(vol_w, vol_h, vol_d));
+}
+
+extern "C"
+void render()
+{
+	checkCudaErrors(cudaMemcpy3D(&copyParams));
+	checkCudaErrors(cudaMemset(d_output, 0,imageW*imageH*sizeof(uint)));
+
+	d_render<<<gridSize, blockSize>>>(d_output, imageW, imageH, density, brightness, transferOffset, transferScale);
+
+	checkCudaErrors(cudaDeviceSynchronize());
+	checkCudaErrors(cudaMemcpy(h_output, d_output, imageW*imageH*sizeof(uint), cudaMemcpyDeviceToHost));
+}
+
+extern "C"
+void setParams(float d, float b, float offset, float scale, bool filter)
+{
+	density = d; brightness = b; transferOffset = offset; transferScale = scale; linearFiltering = filter;
+}
+
+extern "C"
+void setViewMatrix(float rot_x, float rot_y, float trans_x, float trans_y, float trans_z)
+{
+	float modelView[16];
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+	glRotatef(-rot_x, 1.0, 0.0, 0.0);
+	glRotatef(-rot_y, 0.0, 1.0, 0.0);
+	glTranslatef(-trans_x, -trans_y, -trans_z);
+	glGetFloatv(GL_MODELVIEW_MATRIX, modelView);
+	glPopMatrix();
+
+	float invViewMatrix[12];
+	invViewMatrix[0] = modelView[0];
+	invViewMatrix[1] = modelView[4];
+	invViewMatrix[2] = modelView[8];
+	invViewMatrix[3] = modelView[12];
+	invViewMatrix[4] = modelView[1];
+	invViewMatrix[5] = modelView[5];
+	invViewMatrix[6] = modelView[9];
+	invViewMatrix[7] = modelView[13];
+	invViewMatrix[8] = modelView[2];
+	invViewMatrix[9] = modelView[6];
+	invViewMatrix[10] = modelView[10];
+	invViewMatrix[11] = modelView[14];
+
+	copyInvViewMatrix(invViewMatrix, sizeof(float4)*3);
 }
 
 #endif // #ifndef _VOLUMERENDER_KERNEL_CU_

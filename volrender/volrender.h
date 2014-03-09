@@ -6,8 +6,20 @@ using namespace System;
 
 namespace volrender {
 
-	public ref class Class1
+	public ref class Render
 	{
-		// TODO: 여기에 이 클래스에 대한 메서드를 추가합니다.
+	public:
+		Render(int volume_width, int volume_height, int volume_depth, int img_width, int img_height);
+		void Update(array<Byte>^ in_volume, array<Byte>^ out_image);
+		void SetParams(float density, float brightness, float transperOffset, float transperScale, bool linearFiltering);
+		void SetViewMatrix(float rotation_x, float rotation_y, float translation_x, float translation_y, float translation_z);
+		~Render() { this->!Render(); }
+		!Render();
+	private:
+		int _volume_size;
+		int _img_size;
+		unsigned char* _host_volume;
+		unsigned char* _host_image;
+		void Render::FreeBuffers();
 	};
 }
