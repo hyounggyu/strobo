@@ -88,6 +88,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\volrender\volrender.vcxproj">
+      <Project>{FD08B2AD-7CAD-487C-9D18-78CA2AF0707E}</Project>
+      <Name>volrender</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

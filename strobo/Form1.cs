@@ -13,6 +13,7 @@ using NationalInstruments.Vision;
 using NationalInstruments.Vision.Acquisition.Imaq;
 using NationalInstruments.DAQmx;
 
+using volrender;
 
 namespace strobo
 {
@@ -34,6 +35,9 @@ namespace strobo
         private double maximumValue;
         private double rateValue;
         private int    samplesPerChannelValue;
+
+        // Volume render
+        private Render render;
 
         // Logging
         private StreamWriter sw;
@@ -73,6 +77,12 @@ namespace strobo
             renderWorker.ProgressChanged += new ProgressChangedEventHandler(renderWorker_ProgressChanged);
             renderWorker.WorkerReportsProgress = true;
             renderWorker.WorkerSupportsCancellation = true;
+            
+            //PixelValue2D a = new PixelValue2D(new Rgb32Value[480, 640]);
+            //a.Rgb32[10, 10] = new Rgb32Value(10, 10, 10, 10);
+
+            //PixelValue2D a = new PixelValue2D(new byte[480, 640]);
+            //a.U8[10, 10] = 10;
         }
 
         private void startButton_Click(object sender, EventArgs e)
@@ -198,11 +208,11 @@ namespace strobo
                     {
                         imageViewer.Image.ArrayToImage(curPixels);
                     }
+#endif
                     // Send image
                     // byte[,] 타입을 byte[]로 변경 -> 이거 안 해도 되어야함.
-                    byte[] dest = new byte[subPixels.U8.Length];
-                    Buffer.BlockCopy(subPixels.U8, 0, dest, 0, subPixels.U8.Length);
-#endif
+                    //byte[] dest = new byte[subPixels.U8.Length];
+                    //Buffer.BlockCopy(subPixels.U8, 0, dest, 0, subPixels.U8.Length);
 #if DAQ
                     double dvolt = curVoltage - preVoltage;
                     if (dvolt > 0.02)
@@ -265,7 +275,12 @@ namespace strobo
 
         void renderWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            return;
+            BackgroundWorker worker = (BackgroundWorker)sender;
+            render = new Render(640, 480, 300, 640, 480); // TODO: Params from UI
+            while (!worker.CancellationPending)
+            {
+                // rendering
+            }
         }
 
         void renderWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -275,7 +290,7 @@ namespace strobo
 
         void renderWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            return;
+            render = null;
         }
 
         private void stopButton_Click(object sender, EventArgs e)
