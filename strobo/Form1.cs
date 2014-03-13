@@ -160,7 +160,7 @@ namespace strobo
                 string pixelValue = "";
                 ImageType imageType = (ImageType)_session.Attributes[ImaqStandardAttribute.ImageType].GetValue();
 
-                PixelValue2D prePixels = _session.Acquisition.Extract(bufferNumber, out bufferNumber).ToPixelArray();
+                PixelValue2D prePixels = _session.Acquisition.Extract(bufferNumber, out outbufferNumber).ToPixelArray();
                 bufferNumber++;
 
                 double preVoltage = analogInReader.ReadSingleSample()[0];
