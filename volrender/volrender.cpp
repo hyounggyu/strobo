@@ -10,11 +10,6 @@ extern "C" void setParams(float, float, float, float, bool);
 extern "C" void setViewMatrix(float, float, float, float, float);
 extern "C" void freeCudaBuffers();
 
-#using <NationalInstruments.Vision.dll>
-#using <NationalInstruments.Vision.Common.dll>
-
-using namespace NationalInstruments::Vision;
-
 #pragma managed
 
 #include "volrender.h"
@@ -36,7 +31,7 @@ namespace volrender {
 		init(_host_volume, volume_width, volume_height, volume_depth, _host_image, img_width, img_height);
 	}
 
-	void Render::Update(array<Byte>^ in_volume, array<Rgb32Value,2>^ out_image)
+	void Render::Update(array<Byte>^ in_volume, array<Byte>^ out_image)
 	{
 		for(int i=0; i < _volume_size; i++)
 		{
@@ -45,14 +40,9 @@ namespace volrender {
 
 		render();
 
-		for(int i=0; i < _img_height; i++)
+		for(int i=0; i < _img_size*4; i++)
 		{
-			for(int j=0; j < _img_width; j++)
-			{
-				int idx = (i * _img_width + j) * 4;
-				Rgb32Value pixel(_host_image[idx], _host_image[idx+1], _host_image[idx+2], _host_image[idx+4]);
-				out_image[i,j] = pixel;
-			}
+			out_image[i] = _host_image[i]; // RGBA
 		}
 	}
 
