@@ -47,7 +47,9 @@
             this.volumeHegithTextBox = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.volumeDepthTextBox = new System.Windows.Forms.TextBox();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.numImages)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // imageViewer
@@ -216,11 +218,20 @@
             this.volumeDepthTextBox.Size = new System.Drawing.Size(116, 21);
             this.volumeDepthTextBox.TabIndex = 17;
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Location = new System.Drawing.Point(391, 561);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(150, 150);
+            this.pictureBox1.TabIndex = 19;
+            this.pictureBox1.TabStop = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(667, 737);
+            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.volumeDepthTextBox);
             this.Controls.Add(this.label6);
@@ -243,6 +254,7 @@
             this.Name = "Form1";
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.numImages)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -269,6 +281,7 @@
         private System.Windows.Forms.TextBox volumeHegithTextBox;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox volumeDepthTextBox;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }
 

@@ -39,6 +39,14 @@ namespace strobo
         // Volume render
         private Render render;
 
+        private struct ImageData
+        {
+            public byte[,] image;
+            public double pos;
+        }
+
+        ConcurrentQueue<ImageData> imageDataQueue;
+
         private struct UIUpdateArgs
         {
             public uint bufferNumber;
@@ -58,6 +66,10 @@ namespace strobo
             startButton.Enabled = true;
             stopButton.Enabled = false;
             quitButton.Enabled = true;
+
+            // Set Queue
+            imageDataQueue = new ConcurrentQueue<ImageData>();
+
             //  Set up the acquisition background worker thread.  This thread
             //  will actually acquire the images and issue a callback
             //  to update the UI.
@@ -134,6 +146,7 @@ namespace strobo
 #endif
                 //  Start the background worker thread.
                 acquisitionWorker.RunWorkerAsync(subCheckBox);
+                renderWorker.RunWorkerAsync();
             }
             catch (ImaqException ex)
             {
@@ -149,7 +162,13 @@ namespace strobo
             //  Perform image processing here instead of the UI thread to avoid a
             //  sluggish or unresponsive UI.
             BackgroundWorker worker = (BackgroundWorker)sender;
-            byte[] zero = new byte[] { 0 };
+
+            // RANDOM
+            Random rand = new Random();
+            double voltage = 0.0;
+            byte[,] im = new byte[480, 640];
+            ImageData imdata;
+
             try
             {
 #if IMAQ
@@ -171,6 +190,19 @@ namespace strobo
                 //  be called.
                 while (!worker.CancellationPending)
                 {
+                    // RANDOM
+                    for (int x = 0; x < 640; x++)
+                    {
+                        for (int y = 0; y < 480; y++)
+                        {
+                            im[y, x] = (byte)rand.Next(0, 255);
+                        }
+                    }
+                    voltage = voltage + 1.0;
+                    imdata.image = im;
+                    imdata.pos = voltage;
+                    imageDataQueue.Enqueue(imdata);
+
                     //  Get the next image, convert it to a VisionImage and then update the display.
                     //  Extracting an image is a 0-copy operation, and we need to copy the
                     //  image here for display purposes only.  You can perform image processing
@@ -260,11 +292,43 @@ namespace strobo
 
         void renderWorker_DoWork(object sender, DoWorkEventArgs e)
         {
+            // TODO: Params from UI
+            int volume_width = 640;
+            int volume_height = 480;
+            int volume_depth = 300;
+            int image_width = 640;
+            int image_height = 480;
+
             BackgroundWorker worker = (BackgroundWorker)sender;
-            render = new Render(640, 480, 300, 640, 480); // TODO: Params from UI
+
+            Bitmap bitmap = new Bitmap(image_width, image_height, PixelFormat.Canonical);
+            byte[] volume = new byte[volume_width * volume_height * volume_depth];
+            byte[] image = new byte[image_width * image_height * 4];
+            render = new Render(volume_width, volume_height, volume_depth, image_width, image_height);
+
+            int offset = 0;
+            ImageData imdata;
+
             while (!worker.CancellationPending)
             {
-                // rendering
+                imageDataQueue.TryDequeue(out imdata);
+                Buffer.BlockCopy(imdata.image, 0, volume, offset, imdata.image.Length);
+                offset += imdata.image.Length;
+
+                if (imdata.pos % 100.0 < 0.001)
+                {
+                    render.Update(volume, image);
+
+                    for (int x = 0, idx = 0; x < image_width; x++)
+                    {
+                        for (int y = 0; y < image_height; y++, idx += 4)
+                        {
+                            bitmap.SetPixel(x, y, Color.FromArgb(image[idx + 3], image[idx], image[idx + 1], image[idx + 2]));
+                        }
+                    }
+                    pictureBox1.Image = (Image)bitmap;
+                    offset = 0;
+                }
             }
         }
 
