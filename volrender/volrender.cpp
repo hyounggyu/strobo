@@ -4,7 +4,7 @@
 
 #include <stdlib.h>
 
-extern "C" void init(unsigned char *, int, int, int, unsigned char *, int, int);
+extern "C" void init(unsigned char *, int, int, int, unsigned int *, int, int);
 extern "C" void render();
 extern "C" void setParams(float, float, float, float, bool);
 extern "C" void setViewMatrix(float, float, float, float, float);
@@ -26,7 +26,7 @@ namespace volrender {
 		_img_height = img_height;
 		_img_size = img_width*img_height;
 		_host_volume = (unsigned char *)malloc(_volume_size*sizeof(unsigned char));
-		_host_image = (unsigned char *)malloc(_img_size*4); // RGBA
+		_host_image = (unsigned int *)malloc(_img_size*sizeof(unsigned int)); // RGBA
 
 		init(_host_volume, volume_width, volume_height, volume_depth, _host_image, img_width, img_height);
 	}

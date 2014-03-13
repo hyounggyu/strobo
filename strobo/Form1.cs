@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -301,7 +302,7 @@ namespace strobo
 
             BackgroundWorker worker = (BackgroundWorker)sender;
 
-            Bitmap bitmap = new Bitmap(image_width, image_height, PixelFormat.Canonical);
+            Bitmap bitmap = new Bitmap(image_width, image_height, PixelFormat.Format32bppArgb);
             byte[] volume = new byte[volume_width * volume_height * volume_depth];
             byte[] image = new byte[image_width * image_height * 4];
             render = new Render(volume_width, volume_height, volume_depth, image_width, image_height);
@@ -311,7 +312,11 @@ namespace strobo
 
             while (!worker.CancellationPending)
             {
-                imageDataQueue.TryDequeue(out imdata);
+                if (!imageDataQueue.TryDequeue(out imdata))
+                {
+                    continue;
+                }
+
                 Buffer.BlockCopy(imdata.image, 0, volume, offset, imdata.image.Length);
                 offset += imdata.image.Length;
 

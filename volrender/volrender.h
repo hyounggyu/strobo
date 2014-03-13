@@ -19,7 +19,7 @@ namespace volrender {
 		int _volume_width, _volume_height, _volume_depth, _volume_size;
 		int _img_width, _img_height, _img_size;
 		unsigned char* _host_volume;
-		unsigned char* _host_image;
+		unsigned int* _host_image;
 		void Render::FreeBuffers();
 	};
 }
