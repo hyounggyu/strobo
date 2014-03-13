@@ -39,9 +39,6 @@ namespace strobo
         // Volume render
         private Render render;
 
-        // Logging
-        private StreamWriter sw;
-
         private struct UIUpdateArgs
         {
             public uint bufferNumber;
@@ -87,9 +84,6 @@ namespace strobo
 
         private void startButton_Click(object sender, EventArgs e)
         {
-#if DAQTEST
-            sw = new StreamWriter( new FileStream("output.dat", FileMode.Create) );
-#endif
             try
             {
                 //  Update the UI.
@@ -97,7 +91,7 @@ namespace strobo
                 stopButton.Enabled = true;
                 bufNumTextBox.Text = "";
                 //pixelValTextBox.Text = "";
-#if DAQ
+#if IMAQ
                 //// DAQmx START
                 // Create a new task
                 myTask = new Task();
@@ -117,8 +111,7 @@ namespace strobo
                 // Verify the Task
                 myTask.Control(TaskAction.Verify);
                 //// DAQmx END
-#endif
-#if IMAQ
+
                 //  Create a session.
                 _session = new ImaqSession(interfaceTextBox.Text);
 
@@ -169,8 +162,7 @@ namespace strobo
 
                 PixelValue2D prePixels = _session.Acquisition.Extract(bufferNumber, out bufferNumber).ToPixelArray();
                 bufferNumber++;
-#endif
-#if DAQ
+
                 double preVoltage = analogInReader.ReadSingleSample()[0];
                 double curVoltage;
 #endif
@@ -185,11 +177,8 @@ namespace strobo
                     //  on the extractedImage without having to copy it.
 #if IMAQ
                     PixelValue2D curPixels = _session.Acquisition.Extract(bufferNumber, out outbufferNumber).ToPixelArray();
-#endif
-#if DAQ
                     curVoltage = analogInReader.ReadSingleSample()[0];
-#endif
-#if IMAQ
+
                     for (int x = 0; x < 640; x++)
                     {
                         for (int y=0; y < 480; y++)
@@ -208,12 +197,12 @@ namespace strobo
                     {
                         imageViewer.Image.ArrayToImage(curPixels);
                     }
-#endif
+
                     // Send image
                     // byte[,] 타입을 byte[]로 변경 -> 이거 안 해도 되어야함.
                     //byte[] dest = new byte[subPixels.U8.Length];
                     //Buffer.BlockCopy(subPixels.U8, 0, dest, 0, subPixels.U8.Length);
-#if DAQ
+
                     double dvolt = curVoltage - preVoltage;
                     if (dvolt > 0.02)
                     {
@@ -228,17 +217,13 @@ namespace strobo
                         flagSendMore = false;
                     }
                     preVoltage = curVoltage;
-#endif
+
                     //  Update the UI by calling ReportProgress on the background worker.
                     //  This will call the acquisition_ProgressChanged method in the UI
                     //  thread, where it is safe to update UI elements.  Do not update UI
                     //  elements directly in this thread as doing so could result in a
                     //  deadlock.
-#if DAQ
                     worker.ReportProgress(0, new UIUpdateArgs(outbufferNumber, dvolt));
-                    bufferNumber++;
-#elif IMAQ
-                    worker.ReportProgress(0, new UIUpdateArgs(outbufferNumber, 0));
                     bufferNumber++;
 #endif
                 }
@@ -326,9 +311,6 @@ namespace strobo
                 _session.Close();
                 _session = null;
             }
-#if DAQTEST
-            sw.Close();
-#endif
             //  Update the UI.
             startButton.Enabled = true;
             stopButton.Enabled = false;
