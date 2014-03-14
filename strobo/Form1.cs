@@ -21,7 +21,6 @@ namespace strobo
     public partial class Form1 : Form
     {
         private System.ComponentModel.BackgroundWorker acquisitionWorker, renderWorker;
-        ConcurrentQueue<PixelValue2D> volumeQueue;
 
         // IMAQ variables
         private ImaqSession _session = null;
@@ -297,15 +296,18 @@ namespace strobo
             int volume_width = 640;
             int volume_height = 480;
             int volume_depth = 300;
-            int image_width = 640;
-            int image_height = 480;
+            int image_width = 150;
+            int image_height = 150;
 
             BackgroundWorker worker = (BackgroundWorker)sender;
 
             Bitmap bitmap = new Bitmap(image_width, image_height, PixelFormat.Format32bppArgb);
             byte[] volume = new byte[volume_width * volume_height * volume_depth];
-            byte[] image = new byte[image_width * image_height * 4];
+            int[] image = new int[image_width * image_height];
+
             render = new Render(volume_width, volume_height, volume_depth, image_width, image_height);
+            render.SetParams(0.05f, 1.0f, 0.0f, 1.0f, true);
+            render.SetViewMatrix(0.0f, 0.0f, 0.0f, 0.0f, -4.0f);
 
             int offset = 0;
             ImageData imdata;
@@ -326,9 +328,9 @@ namespace strobo
 
                     for (int x = 0, idx = 0; x < image_width; x++)
                     {
-                        for (int y = 0; y < image_height; y++, idx += 4)
+                        for (int y = 0; y < image_height; y++, idx++)
                         {
-                            bitmap.SetPixel(x, y, Color.FromArgb(image[idx + 3], image[idx], image[idx + 1], image[idx + 2]));
+                            bitmap.SetPixel(x, y, Color.FromArgb(image[idx]));
                         }
                     }
                     pictureBox1.Image = (Image)bitmap;

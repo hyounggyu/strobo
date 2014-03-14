@@ -278,7 +278,7 @@ void copyInvViewMatrix(float *invViewMatrix, size_t sizeofMatrix)
 }
 
 extern "C"
-void init(uchar *h_vol, int vol_w, int vol_h, int vol_d, uint *h_img, int img_w, int img_h)
+void init(uchar *h_vol, int vol_w, int vol_h, int vol_d, uint *h_img, int img_w, int img_h, char *error_str)
 {
 	glewInit();
 

@@ -4,7 +4,7 @@
 
 #include <stdlib.h>
 
-extern "C" void init(unsigned char *, int, int, int, unsigned int *, int, int);
+extern "C" void init(unsigned char *, int, int, int, unsigned int *, int, int, char *);
 extern "C" void render();
 extern "C" void setParams(float, float, float, float, bool);
 extern "C" void setViewMatrix(float, float, float, float, float);
@@ -28,10 +28,12 @@ namespace volrender {
 		_host_volume = (unsigned char *)malloc(_volume_size*sizeof(unsigned char));
 		_host_image = (unsigned int *)malloc(_img_size*sizeof(unsigned int)); // RGBA
 
-		init(_host_volume, volume_width, volume_height, volume_depth, _host_image, img_width, img_height);
+		char *error_str = (char *)malloc(256*sizeof(char));
+		init(_host_volume, volume_width, volume_height, volume_depth, _host_image, img_width, img_height, error_str);
+		error_str;
 	}
 
-	void Render::Update(array<Byte>^ in_volume, array<Byte>^ out_image)
+	void Render::Update(array<Byte>^ in_volume, array<int>^ out_image)
 	{
 		for(int i=0; i < _volume_size; i++)
 		{
@@ -40,9 +42,9 @@ namespace volrender {
 
 		render();
 
-		for(int i=0; i < _img_size*4; i++)
+		for(int i=0; i < _img_size; i++)
 		{
-			out_image[i] = _host_image[i]; // RGBA
+			out_image[i] = (_host_image[i]<<8) + (_host_image[i]>>24); // RGBA to ARGB
 		}
 	}
 
