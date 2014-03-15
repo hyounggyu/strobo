@@ -314,6 +314,7 @@ void setParams(float d, float b, float offset, float scale, bool filter)
 extern "C"
 void setViewMatrix(float rot_x, float rot_y, float trans_x, float trans_y, float trans_z)
 {
+	/*
 	float modelView[16];
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
@@ -323,6 +324,14 @@ void setViewMatrix(float rot_x, float rot_y, float trans_x, float trans_y, float
 	glTranslatef(-trans_x, -trans_y, -trans_z);
 	glGetFloatv(GL_MODELVIEW_MATRIX, modelView);
 	glPopMatrix();
+	*/
+	float modelView[16] =
+    {
+        1.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 4.0f, 1.0f
+    };
 
 	float invViewMatrix[12];
 	invViewMatrix[0] = modelView[0];

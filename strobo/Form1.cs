@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.ComponentModel;
@@ -86,7 +87,11 @@ namespace strobo
             renderWorker.ProgressChanged += new ProgressChangedEventHandler(renderWorker_ProgressChanged);
             renderWorker.WorkerReportsProgress = true;
             renderWorker.WorkerSupportsCancellation = true;
-            
+
+            // Set PictureBox Control
+            pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
+            pictureBox1.ClientSize = new Size(150, 150);
+
             //PixelValue2D a = new PixelValue2D(new Rgb32Value[480, 640]);
             //a.Rgb32[10, 10] = new Rgb32Value(10, 10, 10, 10);
 
@@ -202,7 +207,7 @@ namespace strobo
                     voltage = voltage + 1.0;
                     imdata.image = im;
                     imdata.pos = voltage;
-                    //imageDataQueue.Enqueue(imdata);
+                    imageDataQueue.Enqueue(imdata);
                     imageViewer.Image.ArrayToImage(image);
 
                     //  Get the next image, convert it to a VisionImage and then update the display.
@@ -319,6 +324,7 @@ namespace strobo
             {
                 if (!imageDataQueue.TryDequeue(out imdata))
                 {
+                    Thread.Sleep(100);
                     continue;
                 }
 
@@ -327,7 +333,7 @@ namespace strobo
 
                 if (imdata.pos % 100.0 < 0.001)
                 {
-                    render.Update(volume, image);
+                    render.Update(ref volume, ref image);
 
                     for (int x = 0, idx = 0; x < image_width; x++)
                     {

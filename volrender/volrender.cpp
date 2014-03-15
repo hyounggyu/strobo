@@ -30,10 +30,9 @@ namespace volrender {
 
 		char *error_str = (char *)malloc(256*sizeof(char));
 		init(_host_volume, volume_width, volume_height, volume_depth, _host_image, img_width, img_height, error_str);
-		error_str;
 	}
 
-	void Render::Update(array<Byte>^ in_volume, array<int>^ out_image)
+	void Render::Update(array<Byte>^% in_volume, array<int>^% out_image)
 	{
 		for(int i=0; i < _volume_size; i++)
 		{
@@ -44,7 +43,7 @@ namespace volrender {
 
 		for(int i=0; i < _img_size; i++)
 		{
-			out_image[i] = (_host_image[i]<<8) + (_host_image[i]>>24); // RGBA to ARGB
+			out_image[i] = (_host_image[i]>>8) | (255<<24); // RGBA to ARGB
 		}
 	}
 
