@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define RANDDATA
+
+using System;
 using System.IO;
 using System.Threading;
 using System.Collections.Generic;
@@ -22,7 +24,7 @@ namespace strobo
     public partial class Form1 : Form
     {
         private System.ComponentModel.BackgroundWorker acquisitionWorker, renderWorker;
-
+#if ACQDATA
         // IMAQ variables
         private ImaqSession _session = null;
         private ImaqBufferCollection bufList;
@@ -36,18 +38,7 @@ namespace strobo
         private double maximumValue;
         private double rateValue;
         private int    samplesPerChannelValue;
-
-        // Volume render
-        private Render render;
-
-        private struct ImageData
-        {
-            public byte[,] image;
-            public double pos;
-        }
-
-        ConcurrentQueue<ImageData> imageDataQueue;
-
+#endif
         private struct UIUpdateArgs
         {
             public uint bufferNumber;
@@ -60,20 +51,43 @@ namespace strobo
             }
         }
 
+        private Render render;
+
+        private struct ImageData
+        {
+            public byte[,] imageArray;
+            public double voltageValue;
+        }
+
+        ConcurrentQueue<ImageData> imageDataQueue;
+
         public Form1()
         {
             InitializeComponent();
+            InitializeUI();
+            InitializeBackgroundWorkers();
+            InitializeQueue();
+        }
+
+        private void InitializeUI()
+        {
             //  Initialize the UI.
             startButton.Enabled = true;
             stopButton.Enabled = false;
             quitButton.Enabled = true;
 
-            // Set Queue
-            imageDataQueue = new ConcurrentQueue<ImageData>();
+            // Set PictureBox Control
+            renderPictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
+            renderPictureBox.ClientSize = new Size(150, 150);
+        }
 
-            //  Set up the acquisition background worker thread.  This thread
-            //  will actually acquire the images and issue a callback
-            //  to update the UI.
+        private void InitializeQueue()
+        {
+            imageDataQueue = new ConcurrentQueue<ImageData>();
+        }
+
+        private void InitializeBackgroundWorkers()
+        {
             acquisitionWorker = new System.ComponentModel.BackgroundWorker();
             acquisitionWorker.DoWork += new DoWorkEventHandler(acquisitionWorker_DoWork);
             acquisitionWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(acquisitionWorker_RunWorkerCompleted);
@@ -87,16 +101,6 @@ namespace strobo
             renderWorker.ProgressChanged += new ProgressChangedEventHandler(renderWorker_ProgressChanged);
             renderWorker.WorkerReportsProgress = true;
             renderWorker.WorkerSupportsCancellation = true;
-
-            // Set PictureBox Control
-            pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
-            pictureBox1.ClientSize = new Size(150, 150);
-
-            //PixelValue2D a = new PixelValue2D(new Rgb32Value[480, 640]);
-            //a.Rgb32[10, 10] = new Rgb32Value(10, 10, 10, 10);
-
-            //PixelValue2D a = new PixelValue2D(new byte[480, 640]);
-            //a.U8[10, 10] = 10;
         }
 
         private void startButton_Click(object sender, EventArgs e)
@@ -108,8 +112,8 @@ namespace strobo
                 stopButton.Enabled = true;
                 bufNumTextBox.Text = "";
                 //pixelValTextBox.Text = "";
-#if IMAQ
-                //// DAQmx START
+#if ACQDATA
+                // TODO: Params from UI
                 // Create a new task
                 myTask = new Task();
                 physicalChannelText = "Dev1/ai0";
@@ -127,7 +131,6 @@ namespace strobo
 
                 // Verify the Task
                 myTask.Control(TaskAction.Verify);
-                //// DAQmx END
 
                 //  Create a session.
                 _session = new ImaqSession(interfaceTextBox.Text);
@@ -149,7 +152,7 @@ namespace strobo
                 _session.Acquisition.Configure(bufList);
                 _session.Acquisition.AcquireAsync();
 #endif
-                //  Start the background worker thread.
+                //  Start the background worker threads
                 acquisitionWorker.RunWorkerAsync(subCheckBox);
                 renderWorker.RunWorkerAsync();
             }
@@ -168,35 +171,35 @@ namespace strobo
             //  sluggish or unresponsive UI.
             BackgroundWorker worker = (BackgroundWorker)sender;
 
-            // RANDOM
+#if RANDDATA
             Random rand = new Random();
             double voltage = 0.0;
             byte[,] im = new byte[480, 640];
             PixelValue2D image = new PixelValue2D(im);
             ImageData imdata;
-
+#endif
             try
             {
-#if IMAQ
+                uint bufferNumber = 0;
+                uint outBufferNumber;
+#if ACQDATA
                 PixelValue2D subPixels = new PixelValue2D(new byte[480, 640]);
                 uint imgnum = 0;
                 int tmp;
-                uint bufferNumber = 0, outbufferNumber;
                 string pixelValue = "";
                 ImageType imageType = (ImageType)_session.Attributes[ImaqStandardAttribute.ImageType].GetValue();
 
                 PixelValue2D prePixels = _session.Acquisition.Extract(bufferNumber, out outbufferNumber).ToPixelArray();
                 bufferNumber++;
 
-                double preVoltage = analogInReader.ReadSingleSample()[0];
-                double curVoltage;
+                double voltage = analogInReader.ReadSingleSample()[0];
 #endif
                 //  Loop until we tell the thread to cancel or we get an error.  When this
                 //  function completes the acquisitionWorker_RunWorkerCompleted method will
                 //  be called.
                 while (!worker.CancellationPending)
                 {
-                    // RANDOM
+#if RANDDATA
                     for (int x = 0; x < 640; x++)
                     {
                         for (int y = 0; y < 480; y++)
@@ -205,18 +208,20 @@ namespace strobo
                         }
                     }
                     voltage = voltage + 1.0;
-                    imdata.image = im;
-                    imdata.pos = voltage;
+                    outBufferNumber = bufferNumber;
+ 
+                    imdata.imageArray = im;
+                    imdata.voltageValue = voltage;
                     imageDataQueue.Enqueue(imdata);
                     imageViewer.Image.ArrayToImage(image);
-
+#endif
                     //  Get the next image, convert it to a VisionImage and then update the display.
                     //  Extracting an image is a 0-copy operation, and we need to copy the
                     //  image here for display purposes only.  You can perform image processing
                     //  on the extractedImage without having to copy it.
-#if IMAQ
+#if ACQDATA
                     PixelValue2D curPixels = _session.Acquisition.Extract(bufferNumber, out outbufferNumber).ToPixelArray();
-                    curVoltage = analogInReader.ReadSingleSample()[0];
+                    voltage = analogInReader.ReadSingleSample()[0];
 
                     for (int x = 0; x < 640; x++)
                     {
@@ -237,34 +242,15 @@ namespace strobo
                         imageViewer.Image.ArrayToImage(curPixels);
                     }
 
-                    // Send image
-                    // byte[,] 타입을 byte[]로 변경 -> 이거 안 해도 되어야함.
-                    //byte[] dest = new byte[subPixels.U8.Length];
-                    //Buffer.BlockCopy(subPixels.U8, 0, dest, 0, subPixels.U8.Length);
-
-                    double dvolt = curVoltage - preVoltage;
-                    if (dvolt > 0.02)
-                    {
-                        publisher.SendMore(dest);
-                        flagSendMore = true;
-                    }
-                    else if (flagSendMore)
-                    {
-                        publisher.Send(zero);
-
-                        // finish
-                        flagSendMore = false;
-                    }
-                    preVoltage = curVoltage;
-
+                    // TODO: Enqueue ImageData
+#endif
                     //  Update the UI by calling ReportProgress on the background worker.
                     //  This will call the acquisition_ProgressChanged method in the UI
                     //  thread, where it is safe to update UI elements.  Do not update UI
                     //  elements directly in this thread as doing so could result in a
                     //  deadlock.
-                    worker.ReportProgress(0, new UIUpdateArgs(outbufferNumber, dvolt));
+                    worker.ReportProgress(0, new UIUpdateArgs(outBufferNumber, voltage));
                     bufferNumber++;
-#endif
                 }
             }
             catch (ImaqException ex)
@@ -318,20 +304,31 @@ namespace strobo
             render.SetViewMatrix(0.0f, 0.0f, 0.0f, 0.0f, -4.0f);
 
             int offset = 0;
-            ImageData imdata;
+            bool isRenderTime = false;
+#if RANDDATA
+            uint imageNumber = 1;
+#endif
 
             while (!worker.CancellationPending)
             {
+                ImageData imdata;
                 if (!imageDataQueue.TryDequeue(out imdata))
                 {
-                    Thread.Sleep(100);
+                    Thread.Sleep(10); // TODO: 10ms is ok?
                     continue;
                 }
 
-                Buffer.BlockCopy(imdata.image, 0, volume, offset, imdata.image.Length);
-                offset += imdata.image.Length;
+                Buffer.BlockCopy(imdata.imageArray, 0, volume, offset, imdata.imageArray.Length);
+                offset += imdata.imageArray.Length;
+#if RANDDATA
+                if (imageNumber % 200 == 0)
+                {
+                    isRenderTime = true;
+                }
+#endif
+                // TODO: Calculate rendertime
 
-                if (imdata.pos % 100.0 < 0.001)
+                if (isRenderTime)
                 {
                     render.Update(ref volume, ref image);
 
@@ -342,9 +339,13 @@ namespace strobo
                             bitmap.SetPixel(x, y, Color.FromArgb(image[idx]));
                         }
                     }
-                    pictureBox1.Image = (Image)bitmap;
                     offset = 0;
+                    isRenderTime = false;
+                    renderPictureBox.Image = (Image)bitmap;
                 }
+#if RANDDATA
+                imageNumber++;
+#endif
             }
         }
 
@@ -362,7 +363,7 @@ namespace strobo
         {
             acquisitionWorker.CancelAsync();
             renderWorker.CancelAsync();
-
+#if ACQDATA
             try
             {
                 if (_session != null)
@@ -375,6 +376,7 @@ namespace strobo
             {
                 MessageBox.Show(ex.Message, "NI-IMAQ Error");
             }
+#endif
         }
 
         private void quitButton_Click(object sender, EventArgs e)
@@ -387,12 +389,14 @@ namespace strobo
 
         private void Cleanup()
         {
+#if ACQDATA
             if (_session != null)
             {
                 // Close the session.
                 _session.Close();
                 _session = null;
             }
+#endif
             //  Update the UI.
             startButton.Enabled = true;
             stopButton.Enabled = false;
