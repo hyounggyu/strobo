@@ -14,8 +14,6 @@
 #ifndef _VOLUMERENDER_KERNEL_CU_
 #define _VOLUMERENDER_KERNEL_CU_
 
-#include <GL/glew.h>
-
 #include <helper_cuda.h>
 #include <helper_math.h>
 
@@ -280,8 +278,6 @@ void copyInvViewMatrix(float *invViewMatrix, size_t sizeofMatrix)
 extern "C"
 void init(uchar *h_vol, int vol_w, int vol_h, int vol_d, uint *h_img, int img_w, int img_h, char *error_str)
 {
-	glewInit();
-
 	h_volume = h_vol;
 	h_output = h_img;
 	imageW = img_w;
@@ -312,19 +308,8 @@ void setParams(float d, float b, float offset, float scale, bool filter)
 }
 
 extern "C"
-void setViewMatrix(float rot_x, float rot_y, float trans_x, float trans_y, float trans_z)
+void setViewMatrix(float *modelView2)
 {
-	/*
-	float modelView[16];
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	glRotatef(-rot_x, 1.0, 0.0, 0.0);
-	glRotatef(-rot_y, 0.0, 1.0, 0.0);
-	glTranslatef(-trans_x, -trans_y, -trans_z);
-	glGetFloatv(GL_MODELVIEW_MATRIX, modelView);
-	glPopMatrix();
-	*/
 	float modelView[16] =
     {
         1.0f, 0.0f, 0.0f, 0.0f,
@@ -332,7 +317,6 @@ void setViewMatrix(float rot_x, float rot_y, float trans_x, float trans_y, float
         0.0f, 0.0f, 1.0f, 0.0f,
         0.0f, 0.0f, 4.0f, 1.0f
     };
-
 	float invViewMatrix[12];
 	invViewMatrix[0] = modelView[0];
 	invViewMatrix[1] = modelView[4];

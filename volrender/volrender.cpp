@@ -2,12 +2,13 @@
 
 #include "stdafx.h"
 
-#include <stdlib.h>
+#include <cstdlib>
+#include <cmath>
 
 extern "C" void init(unsigned char *, int, int, int, unsigned int *, int, int, char *);
 extern "C" void render();
 extern "C" void setParams(float, float, float, float, bool);
-extern "C" void setViewMatrix(float, float, float, float, float);
+extern "C" void setViewMatrix(float *);
 extern "C" void freeCudaBuffers();
 
 #pragma managed
@@ -52,9 +53,50 @@ namespace volrender {
 		setParams(density, brightness, transperOffset, transperScale, linearFiltering);
 	}
 
-	void Render::SetViewMatrix(float rotation_x, float rotation_y, float translation_x, float translation_y, float translation_z)
+	void Render::SetViewMatrix(float rotation_x, float rotation_y, float rotation_z, float translation_x, float translation_y, float translation_z)
 	{
-		setViewMatrix(rotation_x, rotation_y, translation_x, translation_y, translation_z);
+		// http://www.songho.ca/opengl/gl_anglestoaxes.html
+		float modelView[16];
+		const float DEG2RAD = 3.141593f / 180.0f;
+		float theta, sx, cx, sy, cy, sz, cz;
+
+		theta = rotation_x * DEG2RAD;
+		sx = sinf(theta);
+		cx = cosf(theta);
+
+		theta = rotation_y * DEG2RAD;
+		sy = sinf(theta);
+		cy = sinf(theta);
+
+		theta = rotation_z * DEG2RAD;
+		sz = sinf(theta);
+		cy = sinf(theta);
+
+		// left axis
+		modelView[0] = cy*cz;
+		modelView[1] = sx*sy*cz + cx*sz;
+		modelView[2] = -cx*sy*cz + sx*sz;
+		modelView[3] = 0;
+
+		// up axis
+		modelView[4] = -cy*sz;
+		modelView[5] = -sx*sy*sz + cx*cz;
+		modelView[6] = cx*sy*sz + sx*cz;
+		modelView[7] = 0;
+
+		// forward axis
+		modelView[8] = sy;
+		modelView[9] = -sx*cy;
+		modelView[10] = cx*cy;
+		modelView[11] = 0;
+
+		// translation
+		modelView[12] = translation_x;
+		modelView[13] = translation_y;
+		modelView[14] = translation_z;
+		modelView[15] = 1;
+
+		setViewMatrix(modelView);
 	}
 
 	void Render::FreeBuffers()

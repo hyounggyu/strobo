@@ -300,7 +300,7 @@ namespace strobo
             render = new Render(volume_width, volume_height, volume_depth, image_width, image_height);
             // TODO: Params from UI
             render.SetParams(0.05f, 1.0f, 0.0f, 1.0f, true);
-            render.SetViewMatrix(0.0f, 0.0f, 0.0f, 0.0f, -4.0f);
+            render.SetViewMatrix(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -4.0f);
 
             int offset = 0;
             bool isRenderTime = false;

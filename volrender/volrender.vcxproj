@@ -51,13 +51,12 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>cudart.lib;glew32.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(NVCUDASAMPLES_ROOT)\common\lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cudart.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CudaCompile>
-      <Include>$(NVCUDASAMPLES_ROOT)\common\inc;%(Include)</Include>
       <Defines>
       </Defines>
+      <Include>$(NVCUDASAMPLES_ROOT)\common\inc;%(Include)</Include>
     </CudaCompile>
     <CudaLink />
     <CudaLink />
