@@ -220,9 +220,9 @@
             // 
             // renderPictureBox
             // 
-            this.renderPictureBox.Location = new System.Drawing.Point(391, 561);
+            this.renderPictureBox.Location = new System.Drawing.Point(692, 12);
             this.renderPictureBox.Name = "renderPictureBox";
-            this.renderPictureBox.Size = new System.Drawing.Size(150, 150);
+            this.renderPictureBox.Size = new System.Drawing.Size(480, 480);
             this.renderPictureBox.TabIndex = 19;
             this.renderPictureBox.TabStop = false;
             // 
@@ -230,7 +230,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(667, 737);
+            this.ClientSize = new System.Drawing.Size(1184, 737);
             this.Controls.Add(this.renderPictureBox);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.volumeDepthTextBox);

@@ -78,7 +78,6 @@ namespace strobo
 
             // Set PictureBox Control
             renderPictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
-            renderPictureBox.ClientSize = new Size(150, 150);
         }
 
         private void InitializeQueue()
@@ -289,8 +288,8 @@ namespace strobo
             int volume_width = 640;
             int volume_height = 480;
             int volume_depth = 300;
-            int image_width = 150;
-            int image_height = 150;
+            int image_width = renderPictureBox.Size.Width;
+            int image_height = renderPictureBox.Size.Height;
 
             BackgroundWorker worker = (BackgroundWorker)sender;
 
