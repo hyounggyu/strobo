@@ -167,6 +167,7 @@ namespace strobo
             Random rand = new Random();
             double voltage = 0.0;
             byte[,] im = new byte[480, 640];
+            PixelValue2D image = new PixelValue2D(im);
             ImageData imdata;
 
             try
@@ -201,7 +202,8 @@ namespace strobo
                     voltage = voltage + 1.0;
                     imdata.image = im;
                     imdata.pos = voltage;
-                    imageDataQueue.Enqueue(imdata);
+                    //imageDataQueue.Enqueue(imdata);
+                    imageViewer.Image.ArrayToImage(image);
 
                     //  Get the next image, convert it to a VisionImage and then update the display.
                     //  Extracting an image is a 0-copy operation, and we need to copy the
@@ -306,6 +308,7 @@ namespace strobo
             int[] image = new int[image_width * image_height];
 
             render = new Render(volume_width, volume_height, volume_depth, image_width, image_height);
+            // TODO: Params from UI
             render.SetParams(0.05f, 1.0f, 0.0f, 1.0f, true);
             render.SetViewMatrix(0.0f, 0.0f, 0.0f, 0.0f, -4.0f);
 
@@ -351,12 +354,14 @@ namespace strobo
 
         private void stopButton_Click(object sender, EventArgs e)
         {
+            acquisitionWorker.CancelAsync();
+            renderWorker.CancelAsync();
+
             try
             {
                 if (_session != null)
                 {
                     //  Signal the background worker thread to stop and then stop the acquisition.
-                    acquisitionWorker.CancelAsync();
                     _session.Stop();
                 }
             }
