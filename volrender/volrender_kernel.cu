@@ -308,15 +308,8 @@ void setParams(float d, float b, float offset, float scale, bool filter)
 }
 
 extern "C"
-void setViewMatrix(float *modelView2)
+void setViewMatrix(float *modelView)
 {
-	float modelView[16] =
-    {
-        1.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 4.0f, 1.0f
-    };
 	float invViewMatrix[12];
 	invViewMatrix[0] = modelView[0];
 	invViewMatrix[1] = modelView[4];

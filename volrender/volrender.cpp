@@ -48,9 +48,9 @@ namespace volrender {
 		}
 	}
 
-	void Render::SetParams(float density, float brightness, float transperOffset, float transperScale, bool linearFiltering)
+	void Render::SetParams(float density, float brightness, float transferOffset, float transferScale, bool linearFiltering)
 	{
-		setParams(density, brightness, transperOffset, transperScale, linearFiltering);
+		setParams(density, brightness, transferOffset, transferScale, linearFiltering);
 	}
 
 	void Render::SetViewMatrix(float rotation_x, float rotation_y, float rotation_z, float translation_x, float translation_y, float translation_z)
@@ -66,11 +66,11 @@ namespace volrender {
 
 		theta = rotation_y * DEG2RAD;
 		sy = sinf(theta);
-		cy = sinf(theta);
+		cy = cosf(theta);
 
 		theta = rotation_z * DEG2RAD;
 		sz = sinf(theta);
-		cy = sinf(theta);
+		cz = cosf(theta);
 
 		// left axis
 		modelView[0] = cy*cz;
