@@ -400,6 +400,5 @@ namespace strobo
             startButton.Enabled = true;
             stopButton.Enabled = false;
         }
-
     }
 }
