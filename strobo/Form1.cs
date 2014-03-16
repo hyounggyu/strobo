@@ -51,7 +51,20 @@ namespace strobo
             }
         }
 
-        private Render render;
+        private struct RenderUIArgs
+        {
+            public TextBox rotxTextBox;
+            public TextBox rotyTextBox;
+            public TextBox rotzTextBox;
+            public TextBox transxTextBox;
+            public TextBox transyTextBox;
+            public TextBox transzTextBox;
+            public TextBox densityTextBox;
+            public TextBox brightnessTextBox;
+            public TextBox transoffsetTextBox;
+            public TextBox transscaleTextBox;
+            public CheckBox linfilterCheckBox;
+        }
 
         private struct ImageData
         {
@@ -59,6 +72,7 @@ namespace strobo
             public double voltageValue;
         }
 
+        private Render render;
         ConcurrentQueue<ImageData> imageDataQueue;
 
         public Form1()
@@ -153,7 +167,21 @@ namespace strobo
 #endif
                 //  Start the background worker threads
                 acquisitionWorker.RunWorkerAsync(subCheckBox);
-                renderWorker.RunWorkerAsync();
+
+                RenderUIArgs renderUIArgs;
+                renderUIArgs.rotxTextBox = rotxTextBox;
+                renderUIArgs.rotyTextBox = rotyTextBox;
+                renderUIArgs.rotzTextBox = rotzTextBox;
+                renderUIArgs.transxTextBox = transxTextBox;
+                renderUIArgs.transyTextBox = transyTextBox;
+                renderUIArgs.transzTextBox = transzTextBox;
+                renderUIArgs.densityTextBox = densityTextBox;
+                renderUIArgs.brightnessTextBox = brightnessTextBox;
+                renderUIArgs.transoffsetTextBox = transoffsetTextBox;
+                renderUIArgs.transscaleTextBox = transscaleTextBox;
+                renderUIArgs.linfilterCheckBox = linfilterCheckBox;
+
+                renderWorker.RunWorkerAsync(renderUIArgs);
             }
             catch (ImaqException ex)
             {
@@ -169,7 +197,6 @@ namespace strobo
             //  Perform image processing here instead of the UI thread to avoid a
             //  sluggish or unresponsive UI.
             BackgroundWorker worker = (BackgroundWorker)sender;
-
 #if RANDDATA
             Random rand = new Random();
             double voltage = 0.0;
@@ -284,6 +311,9 @@ namespace strobo
 
         void renderWorker_DoWork(object sender, DoWorkEventArgs e)
         {
+            BackgroundWorker worker = (BackgroundWorker)sender;
+            RenderUIArgs renderUIArgs = (RenderUIArgs)e.Argument;
+
             // TODO: Params from UI
             int volume_width = 640;
             int volume_height = 480;
@@ -291,17 +321,14 @@ namespace strobo
             int image_width = renderPictureBox.Size.Width;
             int image_height = renderPictureBox.Size.Height;
 
-            BackgroundWorker worker = (BackgroundWorker)sender;
-
+            render = new Render(volume_width, volume_height, volume_depth, image_width, image_height);
             Bitmap bitmap = new Bitmap(image_width, image_height, PixelFormat.Format32bppArgb);
             byte[] volume = new byte[volume_width * volume_height * volume_depth];
             int[] image = new int[image_width * image_height];
 
-            render = new Render(volume_width, volume_height, volume_depth, image_width, image_height);
-            // TODO: Params from UI
-            render.SetParams(0.05f, 1.0f, 0.0f, 1.0f, true);
-            render.SetViewMatrix(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 4.0f);
-
+            float density = 0.05f, brightness = 1.0f, transoffset = 0.0f, transscale = 1.0f;
+            bool linearfilter = true ;
+            float rotx = 0.0f, roty = 0.0f, rotz = 0.0f, transx = 0.0f, transy = 0.0f, transz = 4.0f;
             int offset = 0;
             bool isRenderTime = false;
 #if RANDDATA
@@ -324,11 +351,36 @@ namespace strobo
                 {
                     isRenderTime = true;
                 }
+                imageNumber++;
 #endif
                 // TODO: Calculate rendertime
 
                 if (isRenderTime)
                 {
+                    try
+                    {
+                        rotx = Convert.ToSingle(renderUIArgs.rotxTextBox.Text);
+                        roty = Convert.ToSingle(renderUIArgs.rotyTextBox.Text);
+                        rotz = Convert.ToSingle(renderUIArgs.rotzTextBox.Text);
+                        transx = Convert.ToSingle(renderUIArgs.transxTextBox.Text);
+                        transy = Convert.ToSingle(renderUIArgs.transyTextBox.Text);
+                        transz = Convert.ToSingle(renderUIArgs.transzTextBox.Text);
+                        density = Convert.ToSingle(renderUIArgs.densityTextBox.Text);
+                        brightness = Convert.ToSingle(renderUIArgs.brightnessTextBox.Text);
+                        transoffset = Convert.ToSingle(renderUIArgs.transoffsetTextBox.Text);
+                        transscale = Convert.ToSingle(renderUIArgs.transscaleTextBox.Text);
+                        linearfilter = renderUIArgs.linfilterCheckBox.Checked;
+                    }
+                    catch (FormatException)
+                    {
+                        offset = 0;
+                        isRenderTime = false;
+                        continue;
+                    }
+
+                    render.SetParams(density, brightness, transoffset, transscale, linearfilter);
+                    render.SetViewMatrix(rotx, roty, rotz, transx, transy, transz);
+
                     render.Update(ref volume, ref image);
 
                     for (int x = 0, idx = 0; x < image_width; x++)
@@ -342,9 +394,6 @@ namespace strobo
                     isRenderTime = false;
                     renderPictureBox.Image = (Image)bitmap;
                 }
-#if RANDDATA
-                imageNumber++;
-#endif
             }
         }
 

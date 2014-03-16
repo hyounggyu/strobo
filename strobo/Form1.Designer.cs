@@ -45,29 +45,29 @@
             this.volumeDepthTextBox = new System.Windows.Forms.TextBox();
             this.renderPictureBox = new System.Windows.Forms.PictureBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.rotxTextBox = new System.Windows.Forms.TextBox();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.label8 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.rotyTextBox = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
-            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.rotzTextBox = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
-            this.textBox5 = new System.Windows.Forms.TextBox();
+            this.transxTextBox = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
-            this.textBox7 = new System.Windows.Forms.TextBox();
+            this.transyTextBox = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.textBox9 = new System.Windows.Forms.TextBox();
+            this.transzTextBox = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.linfilterCheckBox = new System.Windows.Forms.CheckBox();
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
             this.label9 = new System.Windows.Forms.Label();
-            this.textBox4 = new System.Windows.Forms.TextBox();
+            this.densityTextBox = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
-            this.textBox6 = new System.Windows.Forms.TextBox();
+            this.brightnessTextBox = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
-            this.textBox8 = new System.Windows.Forms.TextBox();
+            this.transoffsetTextBox = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
-            this.textBox10 = new System.Windows.Forms.TextBox();
+            this.transscaleTextBox = new System.Windows.Forms.TextBox();
             this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
             this.textBox11 = new System.Windows.Forms.TextBox();
             this.label16 = new System.Windows.Forms.Label();
@@ -233,28 +233,28 @@
             this.label5.Text = "Rotation X";
             this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // textBox1
+            // rotxTextBox
             // 
-            this.textBox1.Location = new System.Drawing.Point(89, 3);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(80, 21);
-            this.textBox1.TabIndex = 20;
-            this.textBox1.Text = "0";
+            this.rotxTextBox.Location = new System.Drawing.Point(89, 3);
+            this.rotxTextBox.Name = "rotxTextBox";
+            this.rotxTextBox.Size = new System.Drawing.Size(80, 21);
+            this.rotxTextBox.TabIndex = 20;
+            this.rotxTextBox.Text = "0";
             // 
             // flowLayoutPanel1
             // 
             this.flowLayoutPanel1.Controls.Add(this.label5);
-            this.flowLayoutPanel1.Controls.Add(this.textBox1);
+            this.flowLayoutPanel1.Controls.Add(this.rotxTextBox);
             this.flowLayoutPanel1.Controls.Add(this.label8);
-            this.flowLayoutPanel1.Controls.Add(this.textBox2);
+            this.flowLayoutPanel1.Controls.Add(this.rotyTextBox);
             this.flowLayoutPanel1.Controls.Add(this.label10);
-            this.flowLayoutPanel1.Controls.Add(this.textBox3);
+            this.flowLayoutPanel1.Controls.Add(this.rotzTextBox);
             this.flowLayoutPanel1.Controls.Add(this.label12);
-            this.flowLayoutPanel1.Controls.Add(this.textBox5);
+            this.flowLayoutPanel1.Controls.Add(this.transxTextBox);
             this.flowLayoutPanel1.Controls.Add(this.label14);
-            this.flowLayoutPanel1.Controls.Add(this.textBox7);
+            this.flowLayoutPanel1.Controls.Add(this.transyTextBox);
             this.flowLayoutPanel1.Controls.Add(this.label6);
-            this.flowLayoutPanel1.Controls.Add(this.textBox9);
+            this.flowLayoutPanel1.Controls.Add(this.transzTextBox);
             this.flowLayoutPanel1.Location = new System.Drawing.Point(6, 21);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(180, 160);
@@ -269,13 +269,13 @@
             this.label8.Text = "Rotation Y";
             this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // textBox2
+            // rotyTextBox
             // 
-            this.textBox2.Location = new System.Drawing.Point(89, 30);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(80, 21);
-            this.textBox2.TabIndex = 22;
-            this.textBox2.Text = "0";
+            this.rotyTextBox.Location = new System.Drawing.Point(89, 30);
+            this.rotyTextBox.Name = "rotyTextBox";
+            this.rotyTextBox.Size = new System.Drawing.Size(80, 21);
+            this.rotyTextBox.TabIndex = 22;
+            this.rotyTextBox.Text = "0";
             // 
             // label10
             // 
@@ -286,13 +286,13 @@
             this.label10.Text = "Rotation Z";
             this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // textBox3
+            // rotzTextBox
             // 
-            this.textBox3.Location = new System.Drawing.Point(89, 57);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(80, 21);
-            this.textBox3.TabIndex = 24;
-            this.textBox3.Text = "0";
+            this.rotzTextBox.Location = new System.Drawing.Point(89, 57);
+            this.rotzTextBox.Name = "rotzTextBox";
+            this.rotzTextBox.Size = new System.Drawing.Size(80, 21);
+            this.rotzTextBox.TabIndex = 24;
+            this.rotzTextBox.Text = "0";
             // 
             // label12
             // 
@@ -303,13 +303,13 @@
             this.label12.Text = "Translation X";
             this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // textBox5
+            // transxTextBox
             // 
-            this.textBox5.Location = new System.Drawing.Point(89, 84);
-            this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(80, 21);
-            this.textBox5.TabIndex = 28;
-            this.textBox5.Text = "0";
+            this.transxTextBox.Location = new System.Drawing.Point(89, 84);
+            this.transxTextBox.Name = "transxTextBox";
+            this.transxTextBox.Size = new System.Drawing.Size(80, 21);
+            this.transxTextBox.TabIndex = 28;
+            this.transxTextBox.Text = "0";
             // 
             // label14
             // 
@@ -320,13 +320,13 @@
             this.label14.Text = "Translation Y";
             this.label14.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // textBox7
+            // transyTextBox
             // 
-            this.textBox7.Location = new System.Drawing.Point(89, 111);
-            this.textBox7.Name = "textBox7";
-            this.textBox7.Size = new System.Drawing.Size(80, 21);
-            this.textBox7.TabIndex = 32;
-            this.textBox7.Text = "0";
+            this.transyTextBox.Location = new System.Drawing.Point(89, 111);
+            this.transyTextBox.Name = "transyTextBox";
+            this.transyTextBox.Size = new System.Drawing.Size(80, 21);
+            this.transyTextBox.TabIndex = 32;
+            this.transyTextBox.Text = "0";
             // 
             // label6
             // 
@@ -337,17 +337,17 @@
             this.label6.Text = "Translation Z";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // textBox9
+            // transzTextBox
             // 
-            this.textBox9.Location = new System.Drawing.Point(89, 138);
-            this.textBox9.Name = "textBox9";
-            this.textBox9.Size = new System.Drawing.Size(80, 21);
-            this.textBox9.TabIndex = 36;
-            this.textBox9.Text = "4";
+            this.transzTextBox.Location = new System.Drawing.Point(89, 138);
+            this.transzTextBox.Name = "transzTextBox";
+            this.transzTextBox.Size = new System.Drawing.Size(80, 21);
+            this.transzTextBox.TabIndex = 36;
+            this.transzTextBox.Text = "4";
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.checkBox1);
+            this.groupBox1.Controls.Add(this.linfilterCheckBox);
             this.groupBox1.Controls.Add(this.flowLayoutPanel2);
             this.groupBox1.Controls.Add(this.flowLayoutPanel1);
             this.groupBox1.Location = new System.Drawing.Point(670, 521);
@@ -357,28 +357,28 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Rendering Parameters";
             // 
-            // checkBox1
+            // linfilterCheckBox
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Checked = true;
-            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox1.Location = new System.Drawing.Point(209, 145);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(90, 16);
-            this.checkBox1.TabIndex = 24;
-            this.checkBox1.Text = "Linear Filter";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.linfilterCheckBox.AutoSize = true;
+            this.linfilterCheckBox.Checked = true;
+            this.linfilterCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.linfilterCheckBox.Location = new System.Drawing.Point(209, 145);
+            this.linfilterCheckBox.Name = "linfilterCheckBox";
+            this.linfilterCheckBox.Size = new System.Drawing.Size(90, 16);
+            this.linfilterCheckBox.TabIndex = 24;
+            this.linfilterCheckBox.Text = "Linear Filter";
+            this.linfilterCheckBox.UseVisualStyleBackColor = true;
             // 
             // flowLayoutPanel2
             // 
             this.flowLayoutPanel2.Controls.Add(this.label9);
-            this.flowLayoutPanel2.Controls.Add(this.textBox4);
+            this.flowLayoutPanel2.Controls.Add(this.densityTextBox);
             this.flowLayoutPanel2.Controls.Add(this.label11);
-            this.flowLayoutPanel2.Controls.Add(this.textBox6);
+            this.flowLayoutPanel2.Controls.Add(this.brightnessTextBox);
             this.flowLayoutPanel2.Controls.Add(this.label13);
-            this.flowLayoutPanel2.Controls.Add(this.textBox8);
+            this.flowLayoutPanel2.Controls.Add(this.transoffsetTextBox);
             this.flowLayoutPanel2.Controls.Add(this.label15);
-            this.flowLayoutPanel2.Controls.Add(this.textBox10);
+            this.flowLayoutPanel2.Controls.Add(this.transscaleTextBox);
             this.flowLayoutPanel2.Location = new System.Drawing.Point(209, 21);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
             this.flowLayoutPanel2.Size = new System.Drawing.Size(200, 118);
@@ -393,13 +393,13 @@
             this.label9.Text = "Density";
             this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // textBox4
+            // densityTextBox
             // 
-            this.textBox4.Location = new System.Drawing.Point(109, 3);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(80, 21);
-            this.textBox4.TabIndex = 20;
-            this.textBox4.Text = "0.05";
+            this.densityTextBox.Location = new System.Drawing.Point(109, 3);
+            this.densityTextBox.Name = "densityTextBox";
+            this.densityTextBox.Size = new System.Drawing.Size(80, 21);
+            this.densityTextBox.TabIndex = 20;
+            this.densityTextBox.Text = "0.05";
             // 
             // label11
             // 
@@ -410,13 +410,13 @@
             this.label11.Text = "Brightness";
             this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // textBox6
+            // brightnessTextBox
             // 
-            this.textBox6.Location = new System.Drawing.Point(109, 30);
-            this.textBox6.Name = "textBox6";
-            this.textBox6.Size = new System.Drawing.Size(80, 21);
-            this.textBox6.TabIndex = 22;
-            this.textBox6.Text = "1.0";
+            this.brightnessTextBox.Location = new System.Drawing.Point(109, 30);
+            this.brightnessTextBox.Name = "brightnessTextBox";
+            this.brightnessTextBox.Size = new System.Drawing.Size(80, 21);
+            this.brightnessTextBox.TabIndex = 22;
+            this.brightnessTextBox.Text = "1.0";
             // 
             // label13
             // 
@@ -427,13 +427,13 @@
             this.label13.Text = "Transfer Offset";
             this.label13.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // textBox8
+            // transoffsetTextBox
             // 
-            this.textBox8.Location = new System.Drawing.Point(109, 57);
-            this.textBox8.Name = "textBox8";
-            this.textBox8.Size = new System.Drawing.Size(80, 21);
-            this.textBox8.TabIndex = 24;
-            this.textBox8.Text = "0.0";
+            this.transoffsetTextBox.Location = new System.Drawing.Point(109, 57);
+            this.transoffsetTextBox.Name = "transoffsetTextBox";
+            this.transoffsetTextBox.Size = new System.Drawing.Size(80, 21);
+            this.transoffsetTextBox.TabIndex = 24;
+            this.transoffsetTextBox.Text = "0.0";
             // 
             // label15
             // 
@@ -444,13 +444,13 @@
             this.label15.Text = "Transfer Scale";
             this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // textBox10
+            // transscaleTextBox
             // 
-            this.textBox10.Location = new System.Drawing.Point(109, 84);
-            this.textBox10.Name = "textBox10";
-            this.textBox10.Size = new System.Drawing.Size(80, 21);
-            this.textBox10.TabIndex = 28;
-            this.textBox10.Text = "1.0";
+            this.transscaleTextBox.Location = new System.Drawing.Point(109, 84);
+            this.transscaleTextBox.Name = "transscaleTextBox";
+            this.transscaleTextBox.Size = new System.Drawing.Size(80, 21);
+            this.transscaleTextBox.TabIndex = 28;
+            this.transscaleTextBox.Text = "1.0";
             // 
             // flowLayoutPanel3
             // 
@@ -568,29 +568,29 @@
         private System.Windows.Forms.TextBox volumeDepthTextBox;
         private System.Windows.Forms.PictureBox renderPictureBox;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox rotxTextBox;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox rotyTextBox;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.TextBox rotzTextBox;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.TextBox textBox5;
+        private System.Windows.Forms.TextBox transxTextBox;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.TextBox textBox7;
+        private System.Windows.Forms.TextBox transyTextBox;
         private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.TextBox textBox9;
+        private System.Windows.Forms.TextBox transzTextBox;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.TextBox textBox4;
+        private System.Windows.Forms.TextBox densityTextBox;
         private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.TextBox textBox6;
+        private System.Windows.Forms.TextBox brightnessTextBox;
         private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.TextBox textBox8;
+        private System.Windows.Forms.TextBox transoffsetTextBox;
         private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.TextBox textBox10;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.TextBox transscaleTextBox;
+        private System.Windows.Forms.CheckBox linfilterCheckBox;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel3;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.TextBox textBox11;
