@@ -1,4 +1,4 @@
-﻿#define RANDDATA
+﻿#define ACQDATA
 
 using System;
 using System.IO;
@@ -197,12 +197,12 @@ namespace strobo
             //  Perform image processing here instead of the UI thread to avoid a
             //  sluggish or unresponsive UI.
             BackgroundWorker worker = (BackgroundWorker)sender;
+            ImageData imdata;
 #if RANDDATA
             Random rand = new Random();
             double voltage = 0.0;
             byte[,] im = new byte[480, 640];
             PixelValue2D image = new PixelValue2D(im);
-            ImageData imdata;
 #endif
             try
             {
@@ -215,7 +215,7 @@ namespace strobo
                 string pixelValue = "";
                 ImageType imageType = (ImageType)_session.Attributes[ImaqStandardAttribute.ImageType].GetValue();
 
-                PixelValue2D prePixels = _session.Acquisition.Extract(bufferNumber, out outbufferNumber).ToPixelArray();
+                PixelValue2D prePixels = _session.Acquisition.Extract(bufferNumber, out outBufferNumber).ToPixelArray();
                 bufferNumber++;
 
                 double voltage = analogInReader.ReadSingleSample()[0];
@@ -246,7 +246,7 @@ namespace strobo
                     //  image here for display purposes only.  You can perform image processing
                     //  on the extractedImage without having to copy it.
 #if ACQDATA
-                    PixelValue2D curPixels = _session.Acquisition.Extract(bufferNumber, out outbufferNumber).ToPixelArray();
+                    PixelValue2D curPixels = _session.Acquisition.Extract(bufferNumber, out outBufferNumber).ToPixelArray();
                     voltage = analogInReader.ReadSingleSample()[0];
 
                     for (int x = 0; x < 640; x++)
@@ -269,6 +269,9 @@ namespace strobo
                     }
 
                     // TODO: Enqueue ImageData
+                    imdata.imageArray = subPixels.U8;
+                    imdata.voltageValue = voltage;
+                    imageDataQueue.Enqueue(imdata);
 #endif
                     //  Update the UI by calling ReportProgress on the background worker.
                     //  This will call the acquisition_ProgressChanged method in the UI
@@ -331,9 +334,7 @@ namespace strobo
             float rotx = 0.0f, roty = 0.0f, rotz = 0.0f, transx = 0.0f, transy = 0.0f, transz = 4.0f;
             int offset = 0;
             bool isRenderTime = false;
-#if RANDDATA
             uint imageNumber = 1;
-#endif
 
             while (!worker.CancellationPending)
             {
@@ -346,14 +347,13 @@ namespace strobo
 
                 Buffer.BlockCopy(imdata.imageArray, 0, volume, offset, imdata.imageArray.Length);
                 offset += imdata.imageArray.Length;
-#if RANDDATA
+
+                // TODO: Calculate rendertime
                 if (imageNumber % 200 == 0)
                 {
                     isRenderTime = true;
                 }
                 imageNumber++;
-#endif
-                // TODO: Calculate rendertime
 
                 if (isRenderTime)
                 {
