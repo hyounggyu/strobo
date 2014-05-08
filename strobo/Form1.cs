@@ -38,7 +38,12 @@ namespace strobo
         private double maximumValue;
         private double rateValue;
         private int    samplesPerChannelValue;
+        private double _startVoltage;
+        private double _endVoltage;
 #endif
+        // Rendering variables
+        private int _volumeDepth;
+
         private struct UIUpdateArgs
         {
             public uint bufferNumber;
@@ -48,6 +53,16 @@ namespace strobo
             {
                 bufferNumber = _bufferNumber;
                 voltageValue = _voltageValue;
+            }
+        }
+
+        private struct RenderUIUpdateArgs
+        {
+            public uint stackedImages;
+
+            public RenderUIUpdateArgs(uint _stackedImages)
+            {
+                stackedImages = _stackedImages;
             }
         }
 
@@ -69,7 +84,8 @@ namespace strobo
         private struct ImageData
         {
             public byte[,] imageArray;
-            public double voltageValue;
+            public double curVoltage;
+            public double deltaVoltage;
         }
 
         private Render render;
@@ -125,6 +141,11 @@ namespace strobo
                 stopButton.Enabled = true;
                 bufNumTextBox.Text = "";
                 //pixelValTextBox.Text = "";
+                interfaceTextBox.Enabled = false;
+                numImages.Enabled = false;
+                volumeDepthTextBox.Enabled = false;
+                startVoltageTextBox.Enabled = false;
+                endVoltageTextBox.Enabled = false;
 #if ACQDATA
                 // TODO: Params from UI
                 // Create a new task
@@ -164,9 +185,11 @@ namespace strobo
                 //  Configure and start the acquisition.
                 _session.Acquisition.Configure(bufList);
                 _session.Acquisition.AcquireAsync();
+
+                _startVoltage = Convert.ToDouble(startVoltageTextBox.Text);
+                _endVoltage = Convert.ToDouble(endVoltageTextBox.Text);
+                _volumeDepth = Convert.ToInt32(volumeDepthTextBox.Text);
 #endif
-                //  Start the background worker threads
-                acquisitionWorker.RunWorkerAsync(subCheckBox);
 
                 RenderUIArgs renderUIArgs;
                 renderUIArgs.rotxTextBox = rotxTextBox;
@@ -181,11 +204,18 @@ namespace strobo
                 renderUIArgs.transscaleTextBox = transscaleTextBox;
                 renderUIArgs.linfilterCheckBox = linfilterCheckBox;
 
+                //  Start the background worker threads
+                acquisitionWorker.RunWorkerAsync(subCheckBox);
                 renderWorker.RunWorkerAsync(renderUIArgs);
             }
             catch (ImaqException ex)
             {
                 MessageBox.Show(ex.Message, "NI-IMAQ Error");
+                Cleanup();
+            }
+            catch (FormatException ex)
+            {
+                MessageBox.Show(ex.Message, "Format Error");
                 Cleanup();
             }
         }
@@ -218,7 +248,8 @@ namespace strobo
                 PixelValue2D prePixels = _session.Acquisition.Extract(bufferNumber, out outBufferNumber).ToPixelArray();
                 bufferNumber++;
 
-                double voltage = analogInReader.ReadSingleSample()[0];
+                double curVoltage, deltaVoltage;
+                double preVoltage = analogInReader.ReadSingleSample()[0];
 #endif
                 //  Loop until we tell the thread to cancel or we get an error.  When this
                 //  function completes the acquisitionWorker_RunWorkerCompleted method will
@@ -246,8 +277,11 @@ namespace strobo
                     //  image here for display purposes only.  You can perform image processing
                     //  on the extractedImage without having to copy it.
 #if ACQDATA
+                    curVoltage = analogInReader.ReadSingleSample()[0];
+                    deltaVoltage = curVoltage - preVoltage;
+                    preVoltage = curVoltage;
+                    
                     PixelValue2D curPixels = _session.Acquisition.Extract(bufferNumber, out outBufferNumber).ToPixelArray();
-                    voltage = analogInReader.ReadSingleSample()[0];
 
                     for (int x = 0; x < 640; x++)
                     {
@@ -268,9 +302,11 @@ namespace strobo
                         imageViewer.Image.ArrayToImage(curPixels);
                     }
 
-                    // TODO: Enqueue ImageData
+
+                    // Enqueue ImageData
                     imdata.imageArray = subPixels.U8;
-                    imdata.voltageValue = voltage;
+                    imdata.curVoltage = curVoltage;
+                    imdata.deltaVoltage = deltaVoltage;
                     imageDataQueue.Enqueue(imdata);
 #endif
                     //  Update the UI by calling ReportProgress on the background worker.
@@ -278,7 +314,7 @@ namespace strobo
                     //  thread, where it is safe to update UI elements.  Do not update UI
                     //  elements directly in this thread as doing so could result in a
                     //  deadlock.
-                    worker.ReportProgress(0, new UIUpdateArgs(outBufferNumber, voltage));
+                    worker.ReportProgress(0, new UIUpdateArgs(outBufferNumber, curVoltage));
                     bufferNumber++;
                 }
             }
@@ -320,7 +356,7 @@ namespace strobo
             // TODO: Params from UI
             int volume_width = 640;
             int volume_height = 480;
-            int volume_depth = 300;
+            int volume_depth = _volumeDepth;
             int image_width = renderPictureBox.Size.Width;
             int image_height = renderPictureBox.Size.Height;
 
@@ -333,8 +369,8 @@ namespace strobo
             bool linearfilter = true ;
             float rotx = 0.0f, roty = 0.0f, rotz = 0.0f, transx = 0.0f, transy = 0.0f, transz = 4.0f;
             int offset = 0;
+            uint imageNumber = 0;
             bool isRenderTime = false;
-            uint imageNumber = 1;
 
             while (!worker.CancellationPending)
             {
@@ -345,16 +381,16 @@ namespace strobo
                     continue;
                 }
 
-                Buffer.BlockCopy(imdata.imageArray, 0, volume, offset, imdata.imageArray.Length);
-                offset += imdata.imageArray.Length;
-
-                // TODO: Calculate rendertime
-                if (imageNumber % 200 == 0)
+                if (imdata.curVoltage > _startVoltage && imdata.curVoltage < _endVoltage)
                 {
+                    Buffer.BlockCopy(imdata.imageArray, 0, volume, offset, imdata.imageArray.Length);
+                    offset += imdata.imageArray.Length;
+                    imageNumber++;
                     isRenderTime = true;
+                    worker.ReportProgress(0, new RenderUIUpdateArgs(imageNumber));
+                    continue;
                 }
-                imageNumber++;
-
+                
                 if (isRenderTime)
                 {
                     try
@@ -374,7 +410,7 @@ namespace strobo
                     catch (FormatException)
                     {
                         offset = 0;
-                        isRenderTime = false;
+                        imageNumber = 0;
                         continue;
                     }
 
@@ -391,6 +427,7 @@ namespace strobo
                         }
                     }
                     offset = 0;
+                    imageNumber = 0;
                     isRenderTime = false;
                     renderPictureBox.Image = (Image)bitmap;
                 }
@@ -399,7 +436,8 @@ namespace strobo
 
         void renderWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            return;
+            RenderUIUpdateArgs updateArgs = (RenderUIUpdateArgs)e.UserState;
+            stackedImageTextBox.Text = updateArgs.stackedImages.ToString();
         }
 
         void renderWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -448,6 +486,11 @@ namespace strobo
             //  Update the UI.
             startButton.Enabled = true;
             stopButton.Enabled = false;
+            interfaceTextBox.Enabled = true;
+            numImages.Enabled = true;
+            volumeDepthTextBox.Enabled = true;
+            startVoltageTextBox.Enabled = true;
+            endVoltageTextBox.Enabled = true;
         }
     }
 }

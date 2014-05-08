@@ -69,11 +69,17 @@
             this.label15 = new System.Windows.Forms.Label();
             this.transscaleTextBox = new System.Windows.Forms.TextBox();
             this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
-            this.textBox11 = new System.Windows.Forms.TextBox();
             this.label16 = new System.Windows.Forms.Label();
+            this.daqInterfaceTextBox = new System.Windows.Forms.TextBox();
             this.flowLayoutPanel4 = new System.Windows.Forms.FlowLayoutPanel();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.label17 = new System.Windows.Forms.Label();
+            this.startVoltageTextBox = new System.Windows.Forms.TextBox();
+            this.label18 = new System.Windows.Forms.Label();
+            this.endVoltageTextBox = new System.Windows.Forms.TextBox();
+            this.label19 = new System.Windows.Forms.Label();
+            this.stackedImageTextBox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.numImages)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.renderPictureBox)).BeginInit();
             this.flowLayoutPanel1.SuspendLayout();
@@ -124,7 +130,7 @@
             this.numImages.Size = new System.Drawing.Size(100, 21);
             this.numImages.TabIndex = 4;
             this.numImages.Value = new decimal(new int[] {
-            5,
+            2,
             0,
             0,
             0});
@@ -151,7 +157,7 @@
             // 
             // label3
             // 
-            this.label3.Location = new System.Drawing.Point(3, 53);
+            this.label3.Location = new System.Drawing.Point(3, 54);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(100, 20);
             this.label3.TabIndex = 7;
@@ -159,7 +165,7 @@
             // 
             // bufNumTextBox
             // 
-            this.bufNumTextBox.Location = new System.Drawing.Point(109, 56);
+            this.bufNumTextBox.Location = new System.Drawing.Point(109, 57);
             this.bufNumTextBox.Name = "bufNumTextBox";
             this.bufNumTextBox.Size = new System.Drawing.Size(100, 21);
             this.bufNumTextBox.TabIndex = 8;
@@ -214,6 +220,7 @@
             this.volumeDepthTextBox.Name = "volumeDepthTextBox";
             this.volumeDepthTextBox.Size = new System.Drawing.Size(116, 21);
             this.volumeDepthTextBox.TabIndex = 17;
+            this.volumeDepthTextBox.Text = "300";
             // 
             // renderPictureBox
             // 
@@ -455,21 +462,13 @@
             // flowLayoutPanel3
             // 
             this.flowLayoutPanel3.Controls.Add(this.label16);
-            this.flowLayoutPanel3.Controls.Add(this.textBox11);
+            this.flowLayoutPanel3.Controls.Add(this.daqInterfaceTextBox);
             this.flowLayoutPanel3.Controls.Add(this.label4);
             this.flowLayoutPanel3.Controls.Add(this.voltageValTextBox);
             this.flowLayoutPanel3.Location = new System.Drawing.Point(6, 20);
             this.flowLayoutPanel3.Name = "flowLayoutPanel3";
             this.flowLayoutPanel3.Size = new System.Drawing.Size(220, 100);
             this.flowLayoutPanel3.TabIndex = 24;
-            // 
-            // textBox11
-            // 
-            this.textBox11.Location = new System.Drawing.Point(109, 3);
-            this.textBox11.Name = "textBox11";
-            this.textBox11.Size = new System.Drawing.Size(100, 21);
-            this.textBox11.TabIndex = 26;
-            this.textBox11.Text = "img0";
             // 
             // label16
             // 
@@ -478,6 +477,14 @@
             this.label16.Size = new System.Drawing.Size(100, 20);
             this.label16.TabIndex = 25;
             this.label16.Text = "Interface Name";
+            // 
+            // daqInterfaceTextBox
+            // 
+            this.daqInterfaceTextBox.Location = new System.Drawing.Point(109, 3);
+            this.daqInterfaceTextBox.Name = "daqInterfaceTextBox";
+            this.daqInterfaceTextBox.Size = new System.Drawing.Size(100, 21);
+            this.daqInterfaceTextBox.TabIndex = 26;
+            this.daqInterfaceTextBox.Text = "img0";
             // 
             // flowLayoutPanel4
             // 
@@ -512,11 +519,67 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "DAQ";
             // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(247, 699);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(76, 12);
+            this.label17.TabIndex = 29;
+            this.label17.Text = "Start Voltage";
+            // 
+            // startVoltageTextBox
+            // 
+            this.startVoltageTextBox.Location = new System.Drawing.Point(329, 696);
+            this.startVoltageTextBox.Name = "startVoltageTextBox";
+            this.startVoltageTextBox.Size = new System.Drawing.Size(116, 21);
+            this.startVoltageTextBox.TabIndex = 28;
+            this.startVoltageTextBox.Text = "0";
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(250, 726);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(73, 12);
+            this.label18.TabIndex = 31;
+            this.label18.Text = "End Voltage";
+            // 
+            // endVoltageTextBox
+            // 
+            this.endVoltageTextBox.Location = new System.Drawing.Point(329, 723);
+            this.endVoltageTextBox.Name = "endVoltageTextBox";
+            this.endVoltageTextBox.Size = new System.Drawing.Size(116, 21);
+            this.endVoltageTextBox.TabIndex = 30;
+            this.endVoltageTextBox.Text = "1";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(446, 699);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(96, 12);
+            this.label19.TabIndex = 33;
+            this.label19.Text = "Stacked Images";
+            // 
+            // stackedImageTextBox
+            // 
+            this.stackedImageTextBox.Location = new System.Drawing.Point(548, 699);
+            this.stackedImageTextBox.Name = "stackedImageTextBox";
+            this.stackedImageTextBox.Size = new System.Drawing.Size(116, 21);
+            this.stackedImageTextBox.TabIndex = 32;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1164, 762);
+            this.Controls.Add(this.label19);
+            this.Controls.Add(this.stackedImageTextBox);
+            this.Controls.Add(this.label18);
+            this.Controls.Add(this.endVoltageTextBox);
+            this.Controls.Add(this.label17);
+            this.Controls.Add(this.startVoltageTextBox);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -593,10 +656,16 @@
         private System.Windows.Forms.CheckBox linfilterCheckBox;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel3;
         private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.TextBox textBox11;
+        private System.Windows.Forms.TextBox daqInterfaceTextBox;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel4;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.TextBox startVoltageTextBox;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.TextBox endVoltageTextBox;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.TextBox stackedImageTextBox;
     }
 }
 
