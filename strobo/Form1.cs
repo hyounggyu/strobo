@@ -38,8 +38,7 @@ namespace strobo
         private double maximumValue;
         private double rateValue;
         private int    samplesPerChannelValue;
-        private double _startVoltage;
-        private double _endVoltage;
+        private double _thresholdDeltaVoltage;
 #endif
         // Rendering variables
         private int _volumeDepth;
@@ -144,8 +143,7 @@ namespace strobo
                 interfaceTextBox.Enabled = false;
                 numImages.Enabled = false;
                 volumeDepthTextBox.Enabled = false;
-                startVoltageTextBox.Enabled = false;
-                endVoltageTextBox.Enabled = false;
+                thresholdDeltaVoltageTextBox.Enabled = false;
 #if ACQDATA
                 // TODO: Params from UI
                 // Create a new task
@@ -186,8 +184,7 @@ namespace strobo
                 _session.Acquisition.Configure(bufList);
                 _session.Acquisition.AcquireAsync();
 
-                _startVoltage = Convert.ToDouble(startVoltageTextBox.Text);
-                _endVoltage = Convert.ToDouble(endVoltageTextBox.Text);
+                _thresholdDeltaVoltage = Convert.ToDouble(thresholdDeltaVoltageTextBox.Text);
                 _volumeDepth = Convert.ToInt32(volumeDepthTextBox.Text);
 #endif
 
@@ -314,7 +311,7 @@ namespace strobo
                     //  thread, where it is safe to update UI elements.  Do not update UI
                     //  elements directly in this thread as doing so could result in a
                     //  deadlock.
-                    worker.ReportProgress(0, new UIUpdateArgs(outBufferNumber, curVoltage));
+                    worker.ReportProgress(0, new UIUpdateArgs(outBufferNumber, deltaVoltage));
                     bufferNumber++;
                 }
             }
@@ -365,34 +362,49 @@ namespace strobo
             byte[] volume = new byte[volume_width * volume_height * volume_depth];
             int[] image = new int[image_width * image_height];
 
-            float density = 0.05f, brightness = 1.0f, transoffset = 0.0f, transscale = 1.0f;
+            float density = 0.08f, brightness = 5.0f, transoffset = 0.0f, transscale = 1.0f;
             bool linearfilter = true ;
             float rotx = 0.0f, roty = 0.0f, rotz = 0.0f, transx = 0.0f, transy = 0.0f, transz = 4.0f;
             int offset = 0;
             uint imageNumber = 0;
             bool isRenderTime = false;
-
+#if RENDER_LOG
+            TextWriter tw = new StreamWriter("data.txt");
+#endif
             while (!worker.CancellationPending)
             {
                 ImageData imdata;
                 if (!imageDataQueue.TryDequeue(out imdata))
                 {
-                    Thread.Sleep(10); // TODO: 10ms is ok?
                     continue;
                 }
 
-                if (imdata.curVoltage > _startVoltage && imdata.curVoltage < _endVoltage)
+                if (imdata.deltaVoltage > _thresholdDeltaVoltage)
                 {
                     Buffer.BlockCopy(imdata.imageArray, 0, volume, offset, imdata.imageArray.Length);
                     offset += imdata.imageArray.Length;
                     imageNumber++;
-                    isRenderTime = true;
                     worker.ReportProgress(0, new RenderUIUpdateArgs(imageNumber));
-                    continue;
                 }
-                
+                else
+                {
+                    if (imageNumber != 0)
+                    {
+                        isRenderTime = true;
+                    }
+                }
+#if RENDER_LOG
+                tw.WriteLine("queue count: {0}", imageDataQueue.Count);
+                tw.WriteLine("deltaV: {0}", imdata.deltaVoltage);
+                tw.WriteLine("imnumber: {0}", imageNumber);
+                tw.WriteLine("isrendertime: {0}", isRenderTime);
+#endif
                 if (isRenderTime)
                 {
+#if RENDER_LOG
+                    long render_start = DateTime.Now.Ticks;
+                    tw.WriteLine("render start {0}", render_start);
+#endif
                     try
                     {
                         rotx = Convert.ToSingle(renderUIArgs.rotxTextBox.Text);
@@ -406,32 +418,35 @@ namespace strobo
                         transoffset = Convert.ToSingle(renderUIArgs.transoffsetTextBox.Text);
                         transscale = Convert.ToSingle(renderUIArgs.transscaleTextBox.Text);
                         linearfilter = renderUIArgs.linfilterCheckBox.Checked;
+
+                        render.SetParams(density, brightness, transoffset, transscale, linearfilter);
+                        render.SetViewMatrix(rotx, roty, rotz, transx, transy, transz);
+                        render.Update(ref volume, ref image);
+                        for (int x = 0, idx = 0; x < image_width; x++)
+                        {
+                            for (int y = 0; y < image_height; y++, idx++)
+                            {
+                                bitmap.SetPixel(x, y, Color.FromArgb(image[idx]));
+                            }
+                        }
+                        renderPictureBox.Image = (Image)bitmap;
                     }
                     catch (FormatException)
                     {
-                        offset = 0;
-                        imageNumber = 0;
-                        continue;
+                        
                     }
 
-                    render.SetParams(density, brightness, transoffset, transscale, linearfilter);
-                    render.SetViewMatrix(rotx, roty, rotz, transx, transy, transz);
-
-                    render.Update(ref volume, ref image);
-
-                    for (int x = 0, idx = 0; x < image_width; x++)
-                    {
-                        for (int y = 0; y < image_height; y++, idx++)
-                        {
-                            bitmap.SetPixel(x, y, Color.FromArgb(image[idx]));
-                        }
-                    }
                     offset = 0;
                     imageNumber = 0;
                     isRenderTime = false;
-                    renderPictureBox.Image = (Image)bitmap;
+#if RENDER_LOG
+                    tw.WriteLine("render time: {0} ms", TimeSpan.FromTicks(DateTime.Now.Ticks - render_start).TotalMilliseconds);
+#endif
                 }
             }
+#if RENDER_LOG
+            tw.Close();
+#endif
         }
 
         void renderWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -489,8 +504,7 @@ namespace strobo
             interfaceTextBox.Enabled = true;
             numImages.Enabled = true;
             volumeDepthTextBox.Enabled = true;
-            startVoltageTextBox.Enabled = true;
-            endVoltageTextBox.Enabled = true;
+            thresholdDeltaVoltageTextBox.Enabled = true;
         }
     }
 }

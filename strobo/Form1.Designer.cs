@@ -75,9 +75,7 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.label17 = new System.Windows.Forms.Label();
-            this.startVoltageTextBox = new System.Windows.Forms.TextBox();
-            this.label18 = new System.Windows.Forms.Label();
-            this.endVoltageTextBox = new System.Windows.Forms.TextBox();
+            this.thresholdDeltaVoltageTextBox = new System.Windows.Forms.TextBox();
             this.label19 = new System.Windows.Forms.Label();
             this.stackedImageTextBox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.numImages)).BeginInit();
@@ -208,7 +206,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(25, 699);
+            this.label7.Location = new System.Drawing.Point(16, 669);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(84, 12);
             this.label7.TabIndex = 18;
@@ -216,7 +214,7 @@
             // 
             // volumeDepthTextBox
             // 
-            this.volumeDepthTextBox.Location = new System.Drawing.Point(118, 696);
+            this.volumeDepthTextBox.Location = new System.Drawing.Point(127, 666);
             this.volumeDepthTextBox.Name = "volumeDepthTextBox";
             this.volumeDepthTextBox.Size = new System.Drawing.Size(116, 21);
             this.volumeDepthTextBox.TabIndex = 17;
@@ -504,7 +502,7 @@
             this.groupBox2.Controls.Add(this.flowLayoutPanel4);
             this.groupBox2.Location = new System.Drawing.Point(12, 518);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(250, 160);
+            this.groupBox2.Size = new System.Drawing.Size(250, 142);
             this.groupBox2.TabIndex = 26;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "IMAQ";
@@ -514,7 +512,7 @@
             this.groupBox3.Controls.Add(this.flowLayoutPanel3);
             this.groupBox3.Location = new System.Drawing.Point(268, 521);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(250, 160);
+            this.groupBox3.Size = new System.Drawing.Size(250, 139);
             this.groupBox3.TabIndex = 27;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "DAQ";
@@ -522,41 +520,24 @@
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(247, 699);
+            this.label17.Location = new System.Drawing.Point(16, 696);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(76, 12);
+            this.label17.Size = new System.Drawing.Size(106, 12);
             this.label17.TabIndex = 29;
-            this.label17.Text = "Start Voltage";
+            this.label17.Text = "Threshold Delta V";
             // 
-            // startVoltageTextBox
+            // thresholdDeltaVoltageTextBox
             // 
-            this.startVoltageTextBox.Location = new System.Drawing.Point(329, 696);
-            this.startVoltageTextBox.Name = "startVoltageTextBox";
-            this.startVoltageTextBox.Size = new System.Drawing.Size(116, 21);
-            this.startVoltageTextBox.TabIndex = 28;
-            this.startVoltageTextBox.Text = "0";
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(250, 726);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(73, 12);
-            this.label18.TabIndex = 31;
-            this.label18.Text = "End Voltage";
-            // 
-            // endVoltageTextBox
-            // 
-            this.endVoltageTextBox.Location = new System.Drawing.Point(329, 723);
-            this.endVoltageTextBox.Name = "endVoltageTextBox";
-            this.endVoltageTextBox.Size = new System.Drawing.Size(116, 21);
-            this.endVoltageTextBox.TabIndex = 30;
-            this.endVoltageTextBox.Text = "1";
+            this.thresholdDeltaVoltageTextBox.Location = new System.Drawing.Point(128, 693);
+            this.thresholdDeltaVoltageTextBox.Name = "thresholdDeltaVoltageTextBox";
+            this.thresholdDeltaVoltageTextBox.Size = new System.Drawing.Size(116, 21);
+            this.thresholdDeltaVoltageTextBox.TabIndex = 28;
+            this.thresholdDeltaVoltageTextBox.Text = "0.0";
             // 
             // label19
             // 
             this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(446, 699);
+            this.label19.Location = new System.Drawing.Point(265, 678);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(96, 12);
             this.label19.TabIndex = 33;
@@ -564,7 +545,7 @@
             // 
             // stackedImageTextBox
             // 
-            this.stackedImageTextBox.Location = new System.Drawing.Point(548, 699);
+            this.stackedImageTextBox.Location = new System.Drawing.Point(367, 678);
             this.stackedImageTextBox.Name = "stackedImageTextBox";
             this.stackedImageTextBox.Size = new System.Drawing.Size(116, 21);
             this.stackedImageTextBox.TabIndex = 32;
@@ -576,10 +557,8 @@
             this.ClientSize = new System.Drawing.Size(1164, 762);
             this.Controls.Add(this.label19);
             this.Controls.Add(this.stackedImageTextBox);
-            this.Controls.Add(this.label18);
-            this.Controls.Add(this.endVoltageTextBox);
             this.Controls.Add(this.label17);
-            this.Controls.Add(this.startVoltageTextBox);
+            this.Controls.Add(this.thresholdDeltaVoltageTextBox);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -661,9 +640,7 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.TextBox startVoltageTextBox;
-        private System.Windows.Forms.Label label18;
-        private System.Windows.Forms.TextBox endVoltageTextBox;
+        private System.Windows.Forms.TextBox thresholdDeltaVoltageTextBox;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.TextBox stackedImageTextBox;
     }
